@@ -1,0 +1,52 @@
+{
+	"game": {
+		"name": "经典炸飞机",
+		"appid": "639836600",
+		"cid": "0"
+	},
+	"configs": [
+		{
+			"appid": "637220798",
+			"services": [
+				{
+					"service_id": "269",
+					"enable": true
+				}
+			]
+		},
+		{
+			"appid": "UNKNOW"
+		},
+		{
+			"appid": "637220798",
+			"services": [
+				{
+					"service_id": "269",
+					"enable": true
+				}
+			]
+		},
+		{
+			"appid": "UNKNOW"
+		},
+		{
+			"appid": "637220798",
+			"services": [
+				{
+					"service_id": "269",
+					"enable": true
+				}
+			]
+		},
+		{
+			"appid": "639836600",
+			"services": [
+				{
+					"service_id": "269",
+					"enable": true
+				}
+			]
+		}
+	],
+	"needExecNative": true
+}
