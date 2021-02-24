@@ -132,6 +132,7 @@ export default class Home extends cc.Component {
         global.room.joinRoom(joinRoomPara, event => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
                 console.log(`加入房间成功，房间ID：${event.data.roomInfo.id}`);
+                this.loadRoomScene()
             } else {
                 console.log(`加入房间失败，${event.code === MGOBE.ErrCode.EC_ROOM_TEAM_MEMBER_LIMIT_EXCEED ? "当前房间玩家数量已满，" : ""}错误码：${event.code}`);
             }
@@ -167,6 +168,7 @@ export default class Home extends cc.Component {
 
             if (event.code === MGOBE.ErrCode.EC_OK) {
                 console.log(`随机匹配成功，房间ID：${event.data.roomInfo.id}`);
+                this.loadRoomScene()
             } else {
                 console.log(`随机匹配失败，错误码：${event.code}`);
             }

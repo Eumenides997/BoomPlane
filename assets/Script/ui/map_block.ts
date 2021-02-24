@@ -154,7 +154,7 @@ export default class NewClass extends cc.Component {
 
     onTouchCancel(event) {
         if (this.plane) {//有飞机
-            console.log("松开机头机头: (", this.block_x, ",", this.block_y + ")")
+            // console.log("松开机头机头: (", this.block_x, ",", this.block_y + ")")
             this.plane = false//判断松开机头
             var nodePos1 = event.getStartLocation(); //获取触摸结束之前的坐标；
             // console.log("nodePos1: (", nodePos1.x, ",", nodePos1.y, ")")

@@ -7,7 +7,7 @@
 
 import global from "../global";
 import * as Util from "../util";
-import { setState, setDefauleSyncState } from "../logic/StateSyncLogic";
+import { setState, stateSyncState } from "../logic/StateSyncLogic";
 
 export enum SyncType {
     msg = "房间内发消息",
@@ -30,6 +30,9 @@ export default class NewClass extends cc.Component {
     @property(cc.Button)
     leave_btn: cc.Button = null;
 
+    @property(cc.Button)
+    submmit_btn: cc.Button = null;
+
     @property(cc.Label)
     room_id_label: cc.Label = null;
 
@@ -46,16 +49,18 @@ export default class NewClass extends cc.Component {
 
         setState(
             [
-                { id: "1", PlaneData: { id: 11, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
-                { id: "1", PlaneData: { id: 12, head: { x: 3, y: 1 }, tail: { x: 3, y: 4 } } },
-                { id: "1", PlaneData: { id: 13, head: { x: 14, y: 5 }, tail: { x: 11, y: 5 } } },
-                { id: "2", PlaneData: { id: 21, head: { x: 5, y: 5 }, tail: { x: 8, y: 5 } } },,
-                { id: "2", PlaneData: { id: 22, head: { x: 8, y: 9 }, tail: { x: 11, y: 9 } } },,
-                { id: "2", PlaneData: { id: 23, head: { x: 10, y: 20 }, tail: { x: 13, y: 20 } } },
+                { id: MGOBE.Player.id, PlaneData: { id: 1, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
+                { id: MGOBE.Player.id, PlaneData: { id: 2, head: { x: 3, y: 1 }, tail: { x: 3, y: 4 } } },
+                { id: MGOBE.Player.id, PlaneData: { id: 3, head: { x: 14, y: 5 }, tail: { x: 11, y: 5 } } },
+                // { id: "2", PlaneData: { id: 21, head: { x: 5, y: 5 }, tail: { x: 8, y: 5 } } }, ,
+                // { id: "2", PlaneData: { id: 22, head: { x: 8, y: 9 }, tail: { x: 11, y: 9 } } }, ,
+                // { id: "2", PlaneData: { id: 23, head: { x: 10, y: 20 }, tail: { x: 13, y: 20 } } },
             ]
         );
 
         this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.leaveRoom());
+
+        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.sendToGameSvr(stateSyncState));
 
         this.setRoomView()
 
@@ -128,18 +133,18 @@ export default class NewClass extends cc.Component {
     }
 
     // SDK 发送实时服务器消息
-    sendToGameSvr(cmd: StateSyncCmd) {
+    sendToGameSvr(data: any) {
         console.log(`正在发送房间消息`);
 
         const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
             data: {
-                cmd,
+                text: "666"
             },
         };
 
         global.room.sendToGameSvr(sendToGameSvrPara, event => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
-                console.log(`发送实时服务器消息成功`);
+                console.log(`发送实时服务器消息成功:`, data);
             } else {
                 console.log(`发送实时服务器消息失败，错误码：${event.code}`);
             }

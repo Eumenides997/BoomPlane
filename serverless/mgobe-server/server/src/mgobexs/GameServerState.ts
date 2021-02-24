@@ -58,7 +58,7 @@ export function removePlayer(id: string, gameData: GameData) {
 }
 
 // 设置玩家状态
-export function setPlayer(id: string, cmd: StateSyncCmd, gameData: GameData) {
+export function setPlayer(id: string, text: any, gameData: GameData) {
     if (!gameData.players.find(p => p.id === id)) {
         // 添加一个玩家
         initPlayer(id, gameData);
@@ -66,16 +66,8 @@ export function setPlayer(id: string, cmd: StateSyncCmd, gameData: GameData) {
 
     const player = gameData.players.find(p => p.id === id);
 
-    switch (cmd) {
-        case StateSyncCmd.up: player.y++; break;
-        case StateSyncCmd.down: player.y--; break;
-        case StateSyncCmd.left: player.x--; break;
-        case StateSyncCmd.right: player.x++; break;
-        default: return;
-    }
+    player.id = text
 
-    player.x = Math.min(Math.max(player.x, MIN_X), MAX_X);
-    player.y = Math.min(Math.max(player.y, MIN_Y), MAX_Y);
 }
 
 export function initGameState(gameData: GameData, args: mgobexsInterface.ActionArgs<any>) {

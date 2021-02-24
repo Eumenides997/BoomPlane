@@ -11,9 +11,9 @@ const gameServer: mgobexsInterface.GameServer.IGameServer = {
 		};
 	},
 	onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }: mgobexsInterface.ActionArgs<mgobexsInterface.UserDefinedData>) {
-		const cmd = actionData.cmd;
+		const text = actionData.text;
 		// 更新玩家状态
-		setPlayer(sender, cmd, gameData as GameData);
+		setPlayer(sender, text, gameData as GameData);
 	},
 	onJoinRoom: function ({ actionData, gameData, SDK, room, exports }) {
 		// 初始化玩家到游戏数据中
@@ -48,7 +48,6 @@ const gameServer: mgobexsInterface.GameServer.IGameServer = {
 		}
 	},
 };
-
 // 服务器初始化时调用
 function onInitGameServer(tcb: any) {
 	// 如需要，可以在此初始化 TCB

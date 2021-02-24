@@ -43,29 +43,13 @@ function removePlayer(id, gameData) {
 }
 exports.removePlayer = removePlayer;
 // 设置玩家状态
-function setPlayer(id, cmd, gameData) {
+function setPlayer(id, text, gameData) {
     if (!gameData.players.find(p => p.id === id)) {
         // 添加一个玩家
         initPlayer(id, gameData);
     }
     const player = gameData.players.find(p => p.id === id);
-    switch (cmd) {
-        case StateSyncCmd.up:
-            player.y++;
-            break;
-        case StateSyncCmd.down:
-            player.y--;
-            break;
-        case StateSyncCmd.left:
-            player.x--;
-            break;
-        case StateSyncCmd.right:
-            player.x++;
-            break;
-        default: return;
-    }
-    player.x = Math.min(Math.max(player.x, MIN_X), MAX_X);
-    player.y = Math.min(Math.max(player.y, MIN_Y), MAX_Y);
+    player.id = text;
 }
 exports.setPlayer = setPlayer;
 function initGameState(gameData, args) {

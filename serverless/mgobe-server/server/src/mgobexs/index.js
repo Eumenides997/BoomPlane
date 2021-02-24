@@ -12,9 +12,9 @@ const gameServer = {
         };
     },
     onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }) {
-        const cmd = actionData.cmd;
+        const text = actionData.text;
         // 更新玩家状态
-        GameServerState_1.setPlayer(sender, cmd, gameData);
+        GameServerState_1.setPlayer(sender, text, gameData);
     },
     onJoinRoom: function ({ actionData, gameData, SDK, room, exports }) {
         // 初始化玩家到游戏数据中
