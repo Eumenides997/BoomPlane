@@ -1,4 +1,4 @@
-export interface PlayerData<T> {
+export interface PlayerPlaneData<T> {
     id: string,
     PlaneData: PlaneData<null>
 }
@@ -16,5 +16,5 @@ export interface PlaneData<T> {
 }
 
 export interface GameState<T> {
-    players: PlayerData<T>[]
+    playerPlanes: PlayerPlaneData<T>[]
 }

@@ -22,34 +22,34 @@ export default class NewClass extends cc.Component {
 
     start() {
         //初始化地图
-        this.map_init()
-        //初始化飞机
-        console.log("stateSyncState: ", stateSyncState.players)
+        this.map_init() 
     }
 
     //初始化地图
     map_init() {
+        console.log("stateSyncState: ", stateSyncState)
         //获取地图块的尺寸和边界
         var block = cc.instantiate(this.block)
         let size = block.width
         let padding = block.getComponent("map_block").padding
         for (var i = 0; i < 15; i++) {
-            for (var j = 0; j < 15; j++) {
+            for (var j = 0; j < 22; j++) {
                 //放置一个地图块
                 var block = cc.instantiate(this.block)
                 this.node.addChild(block)
                 block.setPosition(cc.v2(i * padding + i * size, j * padding + j * size))
                 //给地图块设置坐标
                 var map_block = block.getComponent("map_block")
+                map_block.map = this
                 var block_x = i + 1
                 var block_y = j + 1
                 map_block.block_x = block_x
                 map_block.block_y = block_y
                 //遍历所有飞机
-                for (var k = 0; k < stateSyncState.players.length; k++) {
+                for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
                     //获取机头、机尾坐标
-                    var plane_head = stateSyncState.players[k].PlaneData.head
-                    var plane_tail = stateSyncState.players[k].PlaneData.tail
+                    var plane_head = stateSyncState.playerPlanes[k].PlaneData.head
+                    var plane_tail = stateSyncState.playerPlanes[k].PlaneData.tail
                     //显示机头
                     if (block_x === plane_head.x && block_y === plane_head.y) {
                         map_block.show_plane_head()
@@ -109,5 +109,7 @@ export default class NewClass extends cc.Component {
         }
     }
 
-    // update (dt) {}
+    // update(dt) {
+    //     this.map_init()
+    // }
 }

@@ -1,8 +1,8 @@
-import { GameState, PlayerData } from "./GameState";
+import { GameState, PlayerPlaneData } from "./GameState";
 
 // 状态同步逻辑状态
 export const stateSyncState: GameState<null> = {
-    players: []
+    playerPlanes: []
 };
 
 // 设置默认的状态同步逻辑状态
@@ -16,16 +16,16 @@ export function setDefauleSyncState(room: MGOBE.Room) {
 }
 
 // 设置全部玩家状态，入参由gameSvr广播提供
-export function setState(players: { id: string, PlaneData: { id, head: { x, y }, tail: { x, y } } }[]) {
+export function setState(playerPlanes: { id: string, PlaneData: { id, head: { x, y }, tail: { x, y } } }[]) {
 
-    if (!Array.isArray(players)) {
+    if (!Array.isArray(playerPlanes)) {
         return;
     }
 
-    stateSyncState.players = [];
+    stateSyncState.playerPlanes = [];
 
-    players.forEach(p => {
-        const player: PlayerData<null> = {
+    playerPlanes.forEach(p => {
+        const playerPlane: PlayerPlaneData<null> = {
             id: p.id,
             PlaneData: {
                 id: p.PlaneData.id,
@@ -40,6 +40,6 @@ export function setState(players: { id: string, PlaneData: { id, head: { x, y },
             }
         }
 
-        stateSyncState.players.push(player);
+        stateSyncState.playerPlanes.push(playerPlane);
     });
 }

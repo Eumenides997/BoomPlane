@@ -46,10 +46,12 @@ export default class NewClass extends cc.Component {
 
         setState(
             [
-                { id: "1", PlaneData: { id: 1, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
-                { id: "1", PlaneData: { id: 2, head: { x: 3, y: 1 }, tail: { x: 3, y: 4 } } },
-                { id: "1", PlaneData: { id: 3, head: { x: 14, y: 5 }, tail: { x: 11, y: 5 } } },
-                { id: "1", PlaneData: { id: 4, head: { x: 5, y: 5 }, tail: { x: 8, y: 5 } } }
+                { id: "1", PlaneData: { id: 11, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
+                { id: "1", PlaneData: { id: 12, head: { x: 3, y: 1 }, tail: { x: 3, y: 4 } } },
+                { id: "1", PlaneData: { id: 13, head: { x: 14, y: 5 }, tail: { x: 11, y: 5 } } },
+                { id: "2", PlaneData: { id: 21, head: { x: 5, y: 5 }, tail: { x: 8, y: 5 } } },,
+                { id: "2", PlaneData: { id: 22, head: { x: 8, y: 9 }, tail: { x: 11, y: 9 } } },,
+                { id: "2", PlaneData: { id: 23, head: { x: 10, y: 20 }, tail: { x: 13, y: 20 } } },
             ]
         );
 
