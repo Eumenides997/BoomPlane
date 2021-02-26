@@ -91,7 +91,7 @@ export function setBroadcastCallbacks(room: MGOBE.Room, context: any, broadcastC
 
 // SDK 发送实时服务器消息
 export function sendToGameSvr(type: string, data: any) {
-    console.log(`正在发送房间消息`);
+    console.log(`正在发送房间消息`, type, data);
 
     const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
         data: {

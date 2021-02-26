@@ -46,27 +46,83 @@ function setPlayer(id, actionData, gameData) {
     // }
     //test
     gameData.data = actionData;
-    //当接收客户端信息类型为->投放炸弹
-    if (actionData.type === "bomb") {
-        const crater = actionData.data;
-        var x = crater.x;
-        var y = crater.y;
-        var type = "block"; //默认砸中位置是空地
-        //判断炸弹投放位置炸到哪了
-        gameData.planes.forEach(plane => {
-            if (plane.userId != id) { //筛选地方飞机
-                if (plane.head.x === x && plane.head.y === y) { //炸中的是飞机头
-                    type = "head";
-                }
-                //砸中的是机身(待完成)
+    //当接收客户端信息类型为->再来一局
+    if (actionData.type === "again") {
+        var flag = true;
+        gameData.players.forEach(p => {
+            if (p.id === id) {
+                p.ifAgain = true;
+            }
+            if (!p.ifAgain) {
+                flag = false;
             }
         });
-        gameData.craters.push({
-            userId: id,
-            x: x,
-            y: crater.y,
-            type: type
+        if (flag) {
+            gameData.state = "开始准备";
+            clearGameState(gameData);
+        }
+    }
+    //当接收客户端信息类型为->玩家状态信息
+    if (actionData.type === "user") {
+        const userID = actionData.data;
+        gameData.players.push({
+            id: userID,
+            ifPlanes: false,
+            ifBomb: false,
+            ifWin: false,
+            ifAgain: false,
         });
+    }
+    //当接收客户端信息类型为->投放炸弹
+    if (actionData.type === "bomb") {
+        if (gameData.state === "准备就绪") { //准备就绪才可以开始对战
+            gameData.players.find(p => {
+                if (p.id === id) {
+                    if (p.ifBomb) { //是否轮到该玩家投放炸弹
+                        const crater = actionData.data;
+                        var x = crater.x;
+                        var y = crater.y;
+                        var type = "block"; //默认砸中位置是空地
+                        //判断炸弹投放位置炸到哪了
+                        gameData.planes.forEach(plane => {
+                            if (plane.userId != id) { //筛选地方飞机
+                                if (plane.head.x === x && plane.head.y === y) { //炸中的是飞机头
+                                    type = "head";
+                                }
+                                //砸中的是机身(待完成)
+                            }
+                        });
+                        gameData.craters.push({
+                            userId: id,
+                            x: x,
+                            y: crater.y,
+                            type: type
+                        });
+                        //投放完炸弹判断是否炸中对方三架飞机机头
+                        var count = 0; //砸中机头的数量
+                        gameData.craters.forEach(p => {
+                            if (p.userId === id) {
+                                if (p.type === "head") {
+                                    count++;
+                                }
+                            }
+                        });
+                        if (count === 3) { //砸中三个机头
+                            gameData.players.find(p => {
+                                if (p.id === id) { //找到获胜玩家
+                                    p.ifWin = true;
+                                    gameData.state = "游戏结束";
+                                }
+                            });
+                        }
+                        //回合转换->改变能扔炸弹的人
+                        gameData.players.forEach(p => {
+                            p.ifBomb = p.ifBomb ? false : true;
+                        });
+                    }
+                }
+            });
+        }
     }
     //当接收客户端信息类型为->提交飞机放置信息
     if (actionData.type === "submmit_plane") {
@@ -90,6 +146,39 @@ function setPlayer(id, actionData, gameData) {
                         }
                     });
                 }
+                //判断是否有该玩家的数据,没有则添加
+                var flag2 = true;
+                gameData.players.forEach(p => {
+                    if (p.id === id) {
+                        flag2 = false;
+                    }
+                });
+                if (flag2) {
+                    gameData.players.push({
+                        id: id,
+                        ifAgain: false,
+                        ifBomb: false,
+                        ifPlanes: false,
+                        ifWin: false
+                    });
+                }
+                //提交完三架飞机后将玩家准备状态改为true
+                gameData.players.find(player => {
+                    if (player.id === id) {
+                        player.ifPlanes = true;
+                        //判断是否是第一位准备好的玩家,如果是则先放炸弹
+                        var flag = true;
+                        gameData.players.forEach(p => {
+                            if (p.ifBomb) {
+                                flag = false;
+                            }
+                        });
+                        player.ifBomb = flag;
+                        if (!flag) { //第二位玩家加入,设置对战状态为true
+                            gameData.state = "准备就绪";
+                        }
+                    }
+                });
             }
         }
     }
@@ -103,6 +192,8 @@ function initGameState(gameData, args) {
     gameData.planes = [];
     gameData.data = [];
     gameData.craters = [];
+    gameData.state = "";
+    gameData.players = [];
     // args.room && args.room.playerList && args.room.playerList.forEach((p, i) => initPlayer(p.id, gameData, 0, i));
     // 初始化后，开始定时向客户端推送游戏状态
     gameData.timer = setInterval(() => {
@@ -110,12 +201,15 @@ function initGameState(gameData, args) {
     }, 1000 / 15);
 }
 exports.initGameState = initGameState;
+//游戏结束后清楚上局游戏数据
 function clearGameState(gameData) {
     // gameData.syncType = SyncType.msg;
-    clearInterval(gameData.timer);
-    gameData.timer = undefined;
+    // clearInterval(gameData.timer);
+    // gameData.timer = undefined;
     // gameData.players = [];
-    gameData.data = [];
-    gameData.planes = [];
+    gameData.data = []; //清空缓存数据
+    gameData.planes = []; //清空摆放飞机信息
+    gameData.craters = []; //清空弹坑信息
+    gameData.players = [];
 }
 exports.clearGameState = clearGameState;

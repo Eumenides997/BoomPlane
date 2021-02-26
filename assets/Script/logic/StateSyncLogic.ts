@@ -1,12 +1,12 @@
 import { GameState, PlayerPlaneData, CraterData } from "./GameState";
-import VS_map_self from "../ui/VS_map_self"
-import VS_map_enemy from "../ui/VS_map_enemy"
 
 // 状态同步逻辑状态
 export const stateSyncState: GameState = {
-    playerPlanes: [],
+    playerPlanes: [],//飞机 摆放信息
     craters_self: [],//玩家弹坑信息
     craters_enemy: [],//敌人弹坑信息
+    players: [],//玩家情况
+    state: "",//游戏状态
 };
 
 // 设置默认的状态同步逻辑状态
@@ -19,9 +19,21 @@ export const stateSyncState: GameState = {
 //     )));
 // }
 
-//设置玩家弹坑摆放状态,入参由gameSvr广播提供craters: { id: string, x: number, y: number, type: string }
+//设置游戏状态,入参由gameSvr广播提供
+export function setState(data: any) {
+    const recvData = data.recvGameData
+    setCratersState(recvData)
+    setGameState(recvData)
+}
+
+//设置游戏状态
+export function setGameState(data: any) {
+    stateSyncState.state = data.state
+}
+
+//设置玩家弹坑摆放状态
 export function setCratersState(data: any) {
-    const craters = data.recvGameData.craters
+    const craters = data.craters
     if (!Array.isArray(craters)) {
         return;
     }

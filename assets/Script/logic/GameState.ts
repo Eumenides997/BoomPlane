@@ -17,6 +17,15 @@ export interface PlaneData {
     }
 }
 
+//玩家状态
+export interface PlayerData {
+    id: string,
+    ifPlanes: boolean,//是否准备->提交飞机摆放信息
+    ifBomb: boolean,//是否该回合放炸弹
+    ifWin: boolean,//是否获胜
+    ifAgain: boolean,//是否点击再来一局
+}
+
 //弹坑信息
 export interface CraterData {
     id: string,
@@ -30,4 +39,6 @@ export interface GameState {
     playerPlanes: PlayerPlaneData[],//飞机信息
     craters_self: CraterData[],//玩家弹坑信息
     craters_enemy: CraterData[],//敌人弹坑信息
+    players: PlayerData[],//玩家状态
+    state: string,//游戏状态
 }

@@ -7,7 +7,7 @@
 
 import global from "../global";
 import * as Util from "../util";
-import { setPlayerPlanesState, stateSyncState, setCratersState } from "../logic/StateSyncLogic";
+import { setPlayerPlanesState, stateSyncState, setState } from "../logic/StateSyncLogic";
 
 export enum SyncType {
     msg = "房间内发消息",
@@ -45,6 +45,20 @@ export default class NewClass extends cc.Component {
     // onLoad () {}
 
     start() {
+        cc.director.preloadScene("VS")
+
+        const roomInfo = global.room && global.room.roomInfo || { playerList: [], owner: undefined } as MGOBE.types.RoomInfo;
+
+        if (roomInfo.owner === MGOBE.Player.id) {
+            this.changeCustomProperties(SyncType.state);
+        } else {
+            console.log("MGOBE.types.CreateRoomType:", MGOBE.types.CreateRoomType)
+        }
+
+        Util.sendToGameSvr("user", MGOBE.Player.id)
+        
+        //进入房间发送玩家信息给服务器
+        console.log("MGOBE.Player.id:", MGOBE.Player.id)
 
         setPlayerPlanesState(
             [
@@ -57,16 +71,18 @@ export default class NewClass extends cc.Component {
             ]
         );
 
+
         this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.leaveRoom());
 
+        //提交飞机布局
         this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () => (cc.director.loadScene("VS"), Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)));
 
         this.setRoomView()
 
-        this.changeCustomProperties(SyncType.state);
 
         // 广播回调
         Util.setBroadcastCallbacks(global.room, this, this as any);
+
 
         // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, () => this.sendToGameSvr(StateSyncCmd.up), this);
     }
@@ -99,6 +115,7 @@ export default class NewClass extends cc.Component {
         global.room.changeRoom({ customProperties }, event => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
                 console.log(`修改房间自定义信息成功`);
+                Util.sendToGameSvr("user", MGOBE.Player.id)
             } else {
                 console.log(`修改房间自定义信息失败，错误码：${event.code}`);
             }
@@ -160,7 +177,7 @@ export default class NewClass extends cc.Component {
     onRecvFromGameSvr(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromGameSvrBst>) {
         // setState(event.data && event.data.data && event.data.data["players"]);
         console.log("实时服务器广播: ", event.data.data)
-        setCratersState(event.data.data)
+        setState(event.data.data)
 
     }
 }

@@ -9,8 +9,10 @@ const gameServer = {
             // syncType: SyncType.msg,
             timer: undefined,
             players: [],
+            craters: [],
             planes: [],
             data: [],
+            state: "",
         };
     },
     onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }) {
@@ -24,27 +26,28 @@ const gameServer = {
     onLeaveRoom: function ({ actionData, gameData, SDK, room, exports }) {
         if (!room || !room.playerList || room.playerList.length === 0) {
             // 房间无人，清理游戏数据
-            return GameServerState_1.clearGameState(gameData);
+            // return clearGameState(gameData as GameData);
         }
         // 移除
         // removePlayer(actionData.leavePlayerId, gameData as GameData);
     },
     onDestroyRoom: function ({ actionData, gameData, SDK, room, exports }) {
         // 房间销毁，清理游戏数据
-        GameServerState_1.clearGameState(gameData);
+        // clearGameState(gameData as GameData);
     },
     onChangeRoom: function (args) {
-        if (args.gameData.timer && args.room && args.room.customProperties === GameServerState_1.SyncType.state) {
-            return;
-        }
-        if (!args.room || args.room.customProperties !== GameServerState_1.SyncType.state) {
-            // 不处于状态同步模式，清理游戏数据
-            GameServerState_1.clearGameState(args.gameData);
-        }
-        if (args.room && args.room.customProperties === GameServerState_1.SyncType.state) {
-            // 当前处于状态同步模式，初始化游戏数据
-            GameServerState_1.initGameState(args.gameData, args);
-        }
+        GameServerState_1.initGameState(args.gameData, args);
+        // if ((args.gameData as GameData).timer && args.room && args.room.customProperties === SyncType.state) {
+        // 	return;
+        // }
+        // if (!args.room || args.room.customProperties !== SyncType.state) {
+        // 	// 不处于状态同步模式，清理游戏数据
+        // 	// clearGameState(args.gameData as GameData);
+        // }
+        // if (args.room && args.room.customProperties === SyncType.state) {
+        // 	// 当前处于状态同步模式，初始化游戏数据
+        // 	initGameState(args.gameData as GameData, args)
+        // }
     },
 };
 // 服务器初始化时调用
