@@ -1,23 +1,24 @@
 import { mgobexsInterface } from './mgobexsInterface';
-import { SyncType, clearGameState, GameData, removePlayer, initPlayer, StateSyncCmd, initGameState, setPlayer } from './GameServerState';
+import { clearGameState, GameData, initGameState, setPlayer, SyncType } from './GameServerState';
 
 const gameServer: mgobexsInterface.GameServer.IGameServer = {
 	mode: 'async',
 	onInitGameData: function (): mgobexsInterface.GameData {
 		return {
-			syncType: SyncType.msg,
+			// syncType: SyncType.msg,
 			timer: undefined,
 			players: [],
+			planes: [],
+			data: [],
 		};
 	},
 	onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }: mgobexsInterface.ActionArgs<mgobexsInterface.UserDefinedData>) {
-		const text = actionData.text;
 		// 更新玩家状态
-		setPlayer(sender, text, gameData as GameData);
+		setPlayer(sender, actionData, gameData as GameData);
 	},
 	onJoinRoom: function ({ actionData, gameData, SDK, room, exports }) {
 		// 初始化玩家到游戏数据中
-		initPlayer(actionData.joinPlayerId, gameData as GameData, 0, room.playerList.findIndex(p => p.id === actionData.joinPlayerId));
+		// initPlayer(actionData.joinPlayerId, gameData as GameData, 0, room.playerList.findIndex(p => p.id === actionData.joinPlayerId));
 	},
 	onLeaveRoom: function ({ actionData, gameData, SDK, room, exports }) {
 		if (!room || !room.playerList || room.playerList.length === 0) {
@@ -26,7 +27,7 @@ const gameServer: mgobexsInterface.GameServer.IGameServer = {
 		}
 
 		// 移除
-		removePlayer(actionData.leavePlayerId, gameData as GameData);
+		// removePlayer(actionData.leavePlayerId, gameData as GameData);
 	},
 	onDestroyRoom: function ({ actionData, gameData, SDK, room, exports }) {
 		// 房间销毁，清理游戏数据

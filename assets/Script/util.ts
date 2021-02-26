@@ -88,3 +88,23 @@ export function setBroadcastCallbacks(room: MGOBE.Room, context: any, broadcastC
         room[key] = callback;
     });
 }
+
+// SDK 发送实时服务器消息
+export function sendToGameSvr(type: string, data: any) {
+    console.log(`正在发送房间消息`);
+
+    const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
+        data: {
+            type: type,
+            data: data
+        },
+    };
+
+    global.room.sendToGameSvr(sendToGameSvrPara, event => {
+        if (event.code === MGOBE.ErrCode.EC_OK) {
+            console.log(`发送实时服务器消息成功:`, data);
+        } else {
+            console.log(`发送实时服务器消息失败，错误码：${event.code}`);
+        }
+    });
+}

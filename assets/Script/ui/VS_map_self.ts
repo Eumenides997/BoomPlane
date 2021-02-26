@@ -13,7 +13,7 @@ const { ccclass, property } = cc._decorator;
 export default class NewClass extends cc.Component {
 
     @property(cc.Prefab)
-    block: cc.Prefab = null;
+    VS_block: cc.Prefab = null;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -21,24 +21,28 @@ export default class NewClass extends cc.Component {
 
     start() {
         //初始化地图
-        this.map_init() 
+        this.map_init()
+    }
+
+    picked() {
+        this.node.destroy()
     }
 
     //初始化地图
     map_init() {
         console.log("stateSyncState: ", stateSyncState)
         //获取地图块的尺寸和边界
-        var block = cc.instantiate(this.block)
+        var block = cc.instantiate(this.VS_block)
         let size = block.width
-        let padding = block.getComponent("map_block").padding
+        let padding = block.getComponent("VS_map_self_block").padding
         for (var i = 0; i < 15; i++) {
             for (var j = 0; j < 22; j++) {
                 //放置一个地图块
-                var block = cc.instantiate(this.block)
+                var block = cc.instantiate(this.VS_block)
                 this.node.addChild(block)
                 block.setPosition(cc.v2(i * padding + i * size, j * padding + j * size))
                 //给地图块设置坐标
-                var map_block = block.getComponent("map_block")
+                var map_block = block.getComponent("VS_map_self_block")
                 map_block.map = this
                 var block_x = i + 1
                 var block_y = j + 1
@@ -104,11 +108,24 @@ export default class NewClass extends cc.Component {
                     }
                 }
 
+                //遍历所有己方地图炸弹
+                stateSyncState.craters_self.forEach(crater => {
+                    if (crater.x === block_x && crater.y === block_y) {
+                        if (crater.type === "block") {
+                            map_block.show_block_crater()
+                        } else if (crater.type === "head") {
+                            map_block.show_plane_head_crater()
+                        } else if (crater.type === "body") {
+                            map_block.show_plane_body_crater()
+                        }
+                    }
+                })
+
             }
         }
     }
 
-    // update(dt) {
-    //     this.map_init()
-    // }
+    update(dt) {
+        this.map_init()
+    }
 }

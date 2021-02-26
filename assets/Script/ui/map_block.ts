@@ -5,15 +5,12 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { stateSyncState, setState } from "../logic/StateSyncLogic";
+import { stateSyncState, setPlayerPlanesState } from "../logic/StateSyncLogic";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class NewClass extends cc.Component {
-
-    @property
-    size: number = 35;
 
     @property
     padding: number = 1;
@@ -100,7 +97,7 @@ export default class NewClass extends cc.Component {
             }
         }
         // console.log("stateSyncState2: ", stateSyncState2)
-        setState(stateSyncState2)
+        setPlayerPlanesState(stateSyncState2)
         // console.log("stateSyncState: ", stateSyncState)
         this.map.map_init()
     }
@@ -147,7 +144,7 @@ export default class NewClass extends cc.Component {
 
         }
         // console.log("stateSyncState2: ", stateSyncState2)
-        setState(stateSyncState2)
+        setPlayerPlanesState(stateSyncState2)
         // console.log("stateSyncState: ", stateSyncState)
         this.map.map_init()
     }
@@ -160,12 +157,14 @@ export default class NewClass extends cc.Component {
             // console.log("nodePos1: (", nodePos1.x, ",", nodePos1.y, ")")
             var nodePos2 = event.getLocation(); //获取触摸结束之后的坐标；
             // console.log("nodePos2: (", nodePos2.x, ",", nodePos2.y, ")")
-            var width = this.size + 4
+            var width = this.node.width + this.padding
             //输出移动到的地图坐标
             var dit_x = (nodePos2.x - nodePos1.x) / width
             var dit_y = (nodePos2.y - nodePos1.y) / width
-            dit_x = parseInt(dit_x.toString())
-            dit_y = parseInt(dit_y.toString())
+            // dit_x = parseInt(dit_x.toString())
+            // dit_y = parseInt(dit_y.toString())
+            dit_x=Math.round(dit_x)
+            dit_y=Math.round(dit_y)
             // console.log("(block_x,block_x): (", dit_x, ",", dit_y, ")")
             //移动飞机
             var PlaneData = this.getBlockData()

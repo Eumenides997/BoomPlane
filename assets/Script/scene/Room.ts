@@ -7,7 +7,7 @@
 
 import global from "../global";
 import * as Util from "../util";
-import { setState, stateSyncState } from "../logic/StateSyncLogic";
+import { setPlayerPlanesState, stateSyncState, setCratersState } from "../logic/StateSyncLogic";
 
 export enum SyncType {
     msg = "房间内发消息",
@@ -45,9 +45,8 @@ export default class NewClass extends cc.Component {
     // onLoad () {}
 
     start() {
-        const roomInfo = global.room && global.room.roomInfo || { playerList: [], owner: undefined } as MGOBE.types.RoomInfo;
 
-        setState(
+        setPlayerPlanesState(
             [
                 { id: MGOBE.Player.id, PlaneData: { id: 1, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
                 { id: MGOBE.Player.id, PlaneData: { id: 2, head: { x: 3, y: 1 }, tail: { x: 3, y: 4 } } },
@@ -60,7 +59,7 @@ export default class NewClass extends cc.Component {
 
         this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.leaveRoom());
 
-        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.sendToGameSvr(stateSyncState));
+        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () => (cc.director.loadScene("VS"), Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)));
 
         this.setRoomView()
 
@@ -69,7 +68,7 @@ export default class NewClass extends cc.Component {
         // 广播回调
         Util.setBroadcastCallbacks(global.room, this, this as any);
 
-        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, () => this.sendToGameSvr(StateSyncCmd.up), this);
+        // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, () => this.sendToGameSvr(StateSyncCmd.up), this);
     }
 
     setRoomView() {
@@ -133,23 +132,24 @@ export default class NewClass extends cc.Component {
     }
 
     // SDK 发送实时服务器消息
-    sendToGameSvr(data: any) {
-        console.log(`正在发送房间消息`);
+    // sendToGameSvr(type: string, data: any) {
+    //     console.log(`正在发送房间消息`);
 
-        const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
-            data: {
-                text: "666"
-            },
-        };
+    //     const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
+    //         data: {
+    //             type: type,
+    //             data: data
+    //         },
+    //     };
 
-        global.room.sendToGameSvr(sendToGameSvrPara, event => {
-            if (event.code === MGOBE.ErrCode.EC_OK) {
-                console.log(`发送实时服务器消息成功:`, data);
-            } else {
-                console.log(`发送实时服务器消息失败，错误码：${event.code}`);
-            }
-        });
-    }
+    //     global.room.sendToGameSvr(sendToGameSvrPara, event => {
+    //         if (event.code === MGOBE.ErrCode.EC_OK) {
+    //             console.log(`发送实时服务器消息成功:`, data);
+    //         } else {
+    //             console.log(`发送实时服务器消息失败，错误码：${event.code}`);
+    //         }
+    //     });
+    // }
 
     /////////////////////////////////// SDK 广播 ///////////////////////////////////
     // SDK 玩家退房广播
@@ -159,6 +159,8 @@ export default class NewClass extends cc.Component {
     // SDK 实时服务器广播
     onRecvFromGameSvr(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromGameSvrBst>) {
         // setState(event.data && event.data.data && event.data.data["players"]);
-        console.log("实时服务器广播: ", event.data)
+        console.log("实时服务器广播: ", event.data.data)
+        setCratersState(event.data.data)
+
     }
 }

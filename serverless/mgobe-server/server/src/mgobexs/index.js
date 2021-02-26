@@ -6,19 +6,20 @@ const gameServer = {
     mode: 'async',
     onInitGameData: function () {
         return {
-            syncType: GameServerState_1.SyncType.msg,
+            // syncType: SyncType.msg,
             timer: undefined,
             players: [],
+            planes: [],
+            data: [],
         };
     },
     onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }) {
-        const text = actionData.text;
         // 更新玩家状态
-        GameServerState_1.setPlayer(sender, text, gameData);
+        GameServerState_1.setPlayer(sender, actionData, gameData);
     },
     onJoinRoom: function ({ actionData, gameData, SDK, room, exports }) {
         // 初始化玩家到游戏数据中
-        GameServerState_1.initPlayer(actionData.joinPlayerId, gameData, 0, room.playerList.findIndex(p => p.id === actionData.joinPlayerId));
+        // initPlayer(actionData.joinPlayerId, gameData as GameData, 0, room.playerList.findIndex(p => p.id === actionData.joinPlayerId));
     },
     onLeaveRoom: function ({ actionData, gameData, SDK, room, exports }) {
         if (!room || !room.playerList || room.playerList.length === 0) {
@@ -26,7 +27,7 @@ const gameServer = {
             return GameServerState_1.clearGameState(gameData);
         }
         // 移除
-        GameServerState_1.removePlayer(actionData.leavePlayerId, gameData);
+        // removePlayer(actionData.leavePlayerId, gameData as GameData);
     },
     onDestroyRoom: function ({ actionData, gameData, SDK, room, exports }) {
         // 房间销毁，清理游戏数据
