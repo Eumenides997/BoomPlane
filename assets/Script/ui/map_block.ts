@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import { stateSyncState, setPlayerPlanesState } from "../logic/StateSyncLogic";
+import { getPlanePos } from "../util"
 
 const { ccclass, property } = cc._decorator;
 
@@ -44,14 +45,17 @@ export default class NewClass extends cc.Component {
 
     //判断是否有飞机,并返回飞机对象
     getBlockData() {
-        for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
-            var PlaneData = stateSyncState.playerPlanes[k].PlaneData
-            var plane_head = PlaneData.head
-            //待完善->点击所有飞机的位置都可以判断成功
-            if (plane_head.x === this.block_x && plane_head.y === this.block_y) {
-                return PlaneData
-            }
-        }
+        var result: any = null
+        stateSyncState.playerPlanes.find(p => {
+            var PlaneData = p.PlaneData
+            var planePos = getPlanePos(PlaneData)
+            planePos.find(p => {
+                if (p.x === this.block_x && p.y === this.block_y) {
+                    result = PlaneData
+                }
+            })
+        })
+        return result
     }
 
     //按飞机id逆时针旋转飞机
@@ -163,8 +167,8 @@ export default class NewClass extends cc.Component {
             var dit_y = (nodePos2.y - nodePos1.y) / width
             // dit_x = parseInt(dit_x.toString())
             // dit_y = parseInt(dit_y.toString())
-            dit_x=Math.round(dit_x)
-            dit_y=Math.round(dit_y)
+            dit_x = Math.round(dit_x)
+            dit_y = Math.round(dit_y)
             // console.log("(block_x,block_x): (", dit_x, ",", dit_y, ")")
             //移动飞机
             var PlaneData = this.getBlockData()

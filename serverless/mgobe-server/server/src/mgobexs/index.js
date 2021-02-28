@@ -6,13 +6,13 @@ const gameServer = {
     mode: 'async',
     onInitGameData: function () {
         return {
-            // syncType: SyncType.msg,
-            timer: undefined,
-            players: [],
-            craters: [],
-            planes: [],
-            data: [],
-            state: "",
+        // syncType: SyncType.msg,
+        // timer: undefined,
+        // players: [],
+        // craters: [],
+        // planes: [],
+        // data: [],
+        // state: "",
         };
     },
     onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }) {
@@ -20,6 +20,7 @@ const gameServer = {
         GameServerState_1.setPlayer(sender, actionData, gameData);
     },
     onJoinRoom: function ({ actionData, gameData, SDK, room, exports }) {
+        GameServerState_1.setData(actionData, gameData);
         // 初始化玩家到游戏数据中
         // initPlayer(actionData.joinPlayerId, gameData as GameData, 0, room.playerList.findIndex(p => p.id === actionData.joinPlayerId));
     },

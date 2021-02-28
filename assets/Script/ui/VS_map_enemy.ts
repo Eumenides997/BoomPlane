@@ -35,8 +35,8 @@ export default class NewClass extends cc.Component {
         var block = cc.instantiate(this.VS_block)
         let size = block.width
         let padding = block.getComponent("VS_map_enemy_block").padding
-        for (var i = 0; i < 15; i++) {
-            for (var j = 0; j < 22; j++) {
+        for (var i = 0; i < 20; i++) {
+            for (var j = 0; j < 28; j++) {
                 //放置一个地图块
                 var block = cc.instantiate(this.VS_block)
                 this.node.addChild(block)

@@ -24,6 +24,12 @@ export function setState(data: any) {
     const recvData = data.recvGameData
     setCratersState(recvData)
     setGameState(recvData)
+    setPlayer(recvData)
+}
+
+//设置玩家状态
+export function setPlayer(data: any) {
+    stateSyncState.players = data.players
 }
 
 //设置游戏状态

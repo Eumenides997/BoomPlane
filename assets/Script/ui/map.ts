@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import { stateSyncState } from "../logic/StateSyncLogic";
+import { getPlanePos } from "../util"
 
 const { ccclass, property } = cc._decorator;
 
@@ -21,7 +22,7 @@ export default class NewClass extends cc.Component {
 
     start() {
         //初始化地图
-        this.map_init() 
+        this.map_init()
     }
 
     //初始化地图
@@ -31,8 +32,8 @@ export default class NewClass extends cc.Component {
         var block = cc.instantiate(this.block)
         let size = block.width
         let padding = block.getComponent("map_block").padding
-        for (var i = 0; i < 15; i++) {
-            for (var j = 0; j < 22; j++) {
+        for (var i = 0; i < 20; i++) {
+            for (var j = 0; j < 28; j++) {
                 //放置一个地图块
                 var block = cc.instantiate(this.block)
                 this.node.addChild(block)
@@ -45,64 +46,78 @@ export default class NewClass extends cc.Component {
                 map_block.block_x = block_x
                 map_block.block_y = block_y
                 //遍历所有飞机
-                for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
-                    //获取机头、机尾坐标
-                    var plane_head = stateSyncState.playerPlanes[k].PlaneData.head
-                    var plane_tail = stateSyncState.playerPlanes[k].PlaneData.tail
-                    //显示机头
-                    if (block_x === plane_head.x && block_y === plane_head.y) {
-                        map_block.show_plane_head()
-                    }
-                    //根据机头机尾放置飞机身体
-                    if (plane_head.x === plane_tail.x) {
-                        //飞机头部朝上或朝下摆放
-                        if (plane_head.y > plane_tail.y) {
-                            //飞机头部朝上摆放
-                            if (block_x === plane_head.x && block_y >= plane_tail.y && block_y < plane_head.y) {
+                stateSyncState.playerPlanes.find(p => {
+                    var PlaneData = p.PlaneData
+                    var planePos = getPlanePos(PlaneData)
+                    planePos.find(p => {
+                        if (p.x === block_x && p.y === block_y) {
+                            if (!p.head) {
                                 map_block.show_plane_body()
-                            }//显示机头和机尾连线
-                            if (block_x >= plane_head.x - 2 && block_x <= plane_head.x + 2 && block_y === plane_head.y - 1) {
-                                map_block.show_plane_body()
-                            }//显示机侧翼
-                            if (block_x >= plane_head.x - 1 && block_x <= plane_head.x + 1 && block_y === plane_head.y - 3) {
-                                map_block.show_plane_body()
-                            }//显示机尾翼
-                        } else {
-                            //飞机头部朝下摆放
-                            if (block_x === plane_head.x && block_y <= plane_tail.y && block_y > plane_head.y) {
-                                map_block.show_plane_body()
-                            }//显示机头和机尾连线
-                            if (block_x >= plane_head.x - 2 && block_x <= plane_head.x + 2 && block_y === plane_head.y + 1) {
-                                map_block.show_plane_body()
-                            }//显示机侧翼
-                            if (block_x >= plane_head.x - 1 && block_x <= plane_head.x + 1 && block_y === plane_head.y + 3) {
-                                map_block.show_plane_body()
-                            }//显示机尾翼
+                            } else {
+                                map_block.show_plane_head()
+                            }
                         }
-                    } else if (plane_head.x < plane_tail.x) {
-                        //飞机头部朝左摆放
-                        if (block_x <= plane_tail.x && block_x > plane_head.x && block_y === plane_head.y) {
-                            map_block.show_plane_body()
-                        }//显示机头和机尾连线
-                        if (block_x === plane_head.x + 1 && block_y <= plane_head.y + 2 && block_y >= plane_head.y - 2) {
-                            map_block.show_plane_body()
-                        }//显示机侧翼
-                        if (block_x === plane_head.x + 3 && block_y <= plane_head.y + 1 && block_y >= plane_head.y - 1) {
-                            map_block.show_plane_body()
-                        }//显示机尾翼
-                    } else {
-                        //飞机头部朝右摆放
-                        if (block_x >= plane_tail.x && block_x < plane_head.x && block_y === plane_head.y) {
-                            map_block.show_plane_body()
-                        }//显示机头和机尾连线
-                        if (block_x === plane_head.x - 1 && block_y <= plane_head.y + 2 && block_y >= plane_head.y - 2) {
-                            map_block.show_plane_body()
-                        }//显示机侧翼
-                        if (block_x === plane_head.x - 3 && block_y <= plane_head.y + 1 && block_y >= plane_head.y - 1) {
-                            map_block.show_plane_body()
-                        }//显示机尾翼
-                    }
-                }
+                    })
+                })
+
+                // for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
+                //     //获取机头、机尾坐标
+                //     var plane_head = stateSyncState.playerPlanes[k].PlaneData.head
+                //     var plane_tail = stateSyncState.playerPlanes[k].PlaneData.tail
+                //     //显示机头
+                //     if (block_x === plane_head.x && block_y === plane_head.y) {
+                //         map_block.show_plane_head()
+                //     }
+                //     //根据机头机尾放置飞机身体
+                //     if (plane_head.x === plane_tail.x) {
+                //         //飞机头部朝上或朝下摆放
+                //         if (plane_head.y > plane_tail.y) {
+                //             //飞机头部朝上摆放
+                //             if (block_x === plane_head.x && block_y >= plane_tail.y && block_y < plane_head.y) {
+                //                 map_block.show_plane_body()
+                //             }//显示机头和机尾连线
+                //             if (block_x >= plane_head.x - 2 && block_x <= plane_head.x + 2 && block_y === plane_head.y - 1) {
+                //                 map_block.show_plane_body()
+                //             }//显示机侧翼
+                //             if (block_x >= plane_head.x - 1 && block_x <= plane_head.x + 1 && block_y === plane_head.y - 3) {
+                //                 map_block.show_plane_body()
+                //             }//显示机尾翼
+                //         } else {
+                //             //飞机头部朝下摆放
+                //             if (block_x === plane_head.x && block_y <= plane_tail.y && block_y > plane_head.y) {
+                //                 map_block.show_plane_body()
+                //             }//显示机头和机尾连线
+                //             if (block_x >= plane_head.x - 2 && block_x <= plane_head.x + 2 && block_y === plane_head.y + 1) {
+                //                 map_block.show_plane_body()
+                //             }//显示机侧翼
+                //             if (block_x >= plane_head.x - 1 && block_x <= plane_head.x + 1 && block_y === plane_head.y + 3) {
+                //                 map_block.show_plane_body()
+                //             }//显示机尾翼
+                //         }
+                //     } else if (plane_head.x < plane_tail.x) {
+                //         //飞机头部朝左摆放
+                //         if (block_x <= plane_tail.x && block_x > plane_head.x && block_y === plane_head.y) {
+                //             map_block.show_plane_body()
+                //         }//显示机头和机尾连线
+                //         if (block_x === plane_head.x + 1 && block_y <= plane_head.y + 2 && block_y >= plane_head.y - 2) {
+                //             map_block.show_plane_body()
+                //         }//显示机侧翼
+                //         if (block_x === plane_head.x + 3 && block_y <= plane_head.y + 1 && block_y >= plane_head.y - 1) {
+                //             map_block.show_plane_body()
+                //         }//显示机尾翼
+                //     } else {
+                //         //飞机头部朝右摆放
+                //         if (block_x >= plane_tail.x && block_x < plane_head.x && block_y === plane_head.y) {
+                //             map_block.show_plane_body()
+                //         }//显示机头和机尾连线
+                //         if (block_x === plane_head.x - 1 && block_y <= plane_head.y + 2 && block_y >= plane_head.y - 2) {
+                //             map_block.show_plane_body()
+                //         }//显示机侧翼
+                //         if (block_x === plane_head.x - 3 && block_y <= plane_head.y + 1 && block_y >= plane_head.y - 1) {
+                //             map_block.show_plane_body()
+                //         }//显示机尾翼
+                //     }
+                // }
 
             }
         }

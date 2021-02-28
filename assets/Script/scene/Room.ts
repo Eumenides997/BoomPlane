@@ -39,27 +39,14 @@ export default class NewClass extends cc.Component {
     @property(cc.Label)
     player_count_label: cc.Label = null;
 
+    @property(cc.Prefab)
+    loadding: cc.Prefab = null;
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start() {
-        cc.director.preloadScene("VS")
-
-        const roomInfo = global.room && global.room.roomInfo || { playerList: [], owner: undefined } as MGOBE.types.RoomInfo;
-
-        if (roomInfo.owner === MGOBE.Player.id) {
-            this.changeCustomProperties(SyncType.state);
-        } else {
-            console.log("MGOBE.types.CreateRoomType:", MGOBE.types.CreateRoomType)
-        }
-
-        Util.sendToGameSvr("user", MGOBE.Player.id)
-        
-        //进入房间发送玩家信息给服务器
-        console.log("MGOBE.Player.id:", MGOBE.Player.id)
-
         setPlayerPlanesState(
             [
                 { id: MGOBE.Player.id, PlaneData: { id: 1, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
@@ -71,20 +58,34 @@ export default class NewClass extends cc.Component {
             ]
         );
 
+        // Util.sendToGameSvr("user", MGOBE.Player.id)
 
-        this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.leaveRoom());
+        //进入房间发送玩家信息给服务器
+        console.log("MGOBE.Player.id:", MGOBE.Player.id)
+
+        this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, Util.leaveRoom);
 
         //提交飞机布局
-        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () => (cc.director.loadScene("VS"), Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)));
+        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, this.onSubmmit_btn);
 
         this.setRoomView()
 
-
         // 广播回调
         Util.setBroadcastCallbacks(global.room, this, this as any);
+        const roomInfo = global.room && global.room.roomInfo || { playerList: [], owner: undefined } as MGOBE.types.RoomInfo;
 
+        if (roomInfo.owner === MGOBE.Player.id) {
+            this.changeCustomProperties(SyncType.state);
+        } else {
+            console.log("MGOBE.types.CreateRoomType:", MGOBE.types.CreateRoomType)
+        }
 
         // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, () => this.sendToGameSvr(StateSyncCmd.up), this);
+    }
+
+    onSubmmit_btn() {
+        // cc.director.loadScene("VS")
+        Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
     }
 
     setRoomView() {
@@ -94,7 +95,12 @@ export default class NewClass extends cc.Component {
         this.player_count_label.string = roomInfo.playerList.length.toString()
     }
 
-    // update(dt) { }
+    update(dt) {
+        // console.log("游戏信息: ", stateSyncState)
+        if (stateSyncState.state === "准备就绪" || stateSyncState.state === "游戏中") {
+            cc.director.loadScene("VS")
+        }
+    }
 
 
     /////////////////////////////////// SDK 操作 ///////////////////////////////////
@@ -115,25 +121,13 @@ export default class NewClass extends cc.Component {
         global.room.changeRoom({ customProperties }, event => {
             if (event.code === MGOBE.ErrCode.EC_OK) {
                 console.log(`修改房间自定义信息成功`);
-                Util.sendToGameSvr("user", MGOBE.Player.id)
+                // Util.sendToGameSvr("user", MGOBE.Player.id)
             } else {
                 console.log(`修改房间自定义信息失败，错误码：${event.code}`);
             }
         });
     }
-    // SDK 退出房间
-    leaveRoom() {
-        console.log(`正在退出房间`);
-        cc.director.loadScene("Home");
 
-        global.room.leaveRoom({}, event => {
-            if (event.code === MGOBE.ErrCode.EC_OK) {
-                console.log(`退出房间成功`);
-            } else {
-                console.log(`退出房间失败，错误码：${event.code}`);
-            }
-        });
-    }
 
     // SDK 解散房间
     dismissRoom() {

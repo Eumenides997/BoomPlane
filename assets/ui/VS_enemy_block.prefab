@@ -116,7 +116,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "padding": 1,
+    "padding": 0,
     "block_x": null,
     "block_y": null,
     "body_plane_crater": {

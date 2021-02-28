@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.clearGameState = exports.initGameState = exports.setPlayer = exports.SyncType = void 0;
+exports.getPlaneBodyPos = exports.clearGameState = exports.initGameState = exports.setPlayer = exports.setData = exports.SyncType = void 0;
 var SyncType;
 (function (SyncType) {
     SyncType["msg"] = "\u623F\u95F4\u5185\u53D1\u6D88\u606F";
@@ -38,6 +38,10 @@ var SyncType;
 //         gameData.players.splice(index, 1);
 //     }
 // }
+function setData(actionData, gameData) {
+    gameData.data = actionData;
+}
+exports.setData = setData;
 // 设置玩家状态
 function setPlayer(id, actionData, gameData) {
     // if (!gameData.players.find(p => p.id === id)) {
@@ -45,7 +49,11 @@ function setPlayer(id, actionData, gameData) {
     //     initPlayer(id, gameData);
     // }
     //test
-    gameData.data = actionData;
+    setData(actionData, gameData);
+    //当接收客户端信息 类型为->state
+    if (actionData.type === "state") {
+        gameData.state = actionData.data;
+    }
     //当接收客户端信息类型为->再来一局
     if (actionData.type === "again") {
         var flag = true;
@@ -75,7 +83,7 @@ function setPlayer(id, actionData, gameData) {
     }
     //当接收客户端信息类型为->投放炸弹
     if (actionData.type === "bomb") {
-        if (gameData.state === "准备就绪") { //准备就绪才可以开始对战
+        if (gameData.state === "游戏中") { //准备就绪才可以开始对战
             gameData.players.find(p => {
                 if (p.id === id) {
                     if (p.ifBomb) { //是否轮到该玩家投放炸弹
@@ -84,12 +92,18 @@ function setPlayer(id, actionData, gameData) {
                         var y = crater.y;
                         var type = "block"; //默认砸中位置是空地
                         //判断炸弹投放位置炸到哪了
-                        gameData.planes.forEach(plane => {
+                        gameData.planes.find(plane => {
                             if (plane.userId != id) { //筛选地方飞机
                                 if (plane.head.x === x && plane.head.y === y) { //炸中的是飞机头
                                     type = "head";
                                 }
-                                //砸中的是机身(待完成)
+                                //砸中的是机身
+                                var Pos = getPlaneBodyPos(plane);
+                                Pos.find(p => {
+                                    if (p.x === x && p.y === y) {
+                                        type = "body";
+                                    }
+                                });
                             }
                         });
                         gameData.craters.push({
@@ -192,7 +206,7 @@ function initGameState(gameData, args) {
     gameData.planes = [];
     gameData.data = [];
     gameData.craters = [];
-    gameData.state = "";
+    gameData.state = gameData.state;
     gameData.players = [];
     // args.room && args.room.playerList && args.room.playerList.forEach((p, i) => initPlayer(p.id, gameData, 0, i));
     // 初始化后，开始定时向客户端推送游戏状态
@@ -207,9 +221,32 @@ function clearGameState(gameData) {
     // clearInterval(gameData.timer);
     // gameData.timer = undefined;
     // gameData.players = [];
-    gameData.data = []; //清空缓存数据
+    // gameData.data = [];//清空缓存数据
     gameData.planes = []; //清空摆放飞机信息
     gameData.craters = []; //清空弹坑信息
     gameData.players = [];
 }
 exports.clearGameState = clearGameState;
+//获取所有机身位置
+function getPlaneBodyPos(PlaneData) {
+    var plane_head = PlaneData.head;
+    var plane_tail = PlaneData.tail;
+    var PlaneBodyPos = []; //用于存储飞机坐标
+    PlaneBodyPos.push({ x: plane_tail.x, y: plane_tail.y }); //机尾不用分类讨论直接存储
+    if (plane_head.x === plane_tail.x) {
+        if (plane_head.y > plane_tail.y) { //机头朝上
+            PlaneBodyPos.push({ x: plane_head.x, y: plane_head.y - 1 }, { x: plane_head.x - 1, y: plane_head.y - 1 }, { x: plane_head.x - 2, y: plane_head.y - 1 }, { x: plane_head.x + 1, y: plane_head.y - 1 }, { x: plane_head.x + 2, y: plane_head.y - 1 }, { x: plane_head.x, y: plane_head.y - 2 }, { x: plane_head.x - 1, y: plane_head.y - 3 }, { x: plane_head.x + 1, y: plane_head.y - 3 });
+        }
+        else { //机头朝下
+            PlaneBodyPos.push({ x: plane_head.x, y: plane_head.y + 1 }, { x: plane_head.x - 1, y: plane_head.y + 1 }, { x: plane_head.x - 2, y: plane_head.y + 1 }, { x: plane_head.x + 1, y: plane_head.y + 1 }, { x: plane_head.x + 2, y: plane_head.y + 1 }, { x: plane_head.x, y: plane_head.y + 2 }, { x: plane_head.x - 1, y: plane_head.y + 3 }, { x: plane_head.x + 1, y: plane_head.y + 3 });
+        }
+    }
+    else if (plane_head.x < plane_tail.x) { //机头朝左
+        PlaneBodyPos.push({ x: plane_head.x + 1, y: plane_head.y }, { x: plane_head.x + 1, y: plane_head.y + 1 }, { x: plane_head.x + 1, y: plane_head.y + 2 }, { x: plane_head.x + 1, y: plane_head.y - 1 }, { x: plane_head.x + 1, y: plane_head.y - 2 }, { x: plane_head.x + 2, y: plane_head.y }, { x: plane_head.x + 3, y: plane_head.y + 1 }, { x: plane_head.x + 3, y: plane_head.y - 1 });
+    }
+    else { //机头朝右
+        PlaneBodyPos.push({ x: plane_head.x - 1, y: plane_head.y }, { x: plane_head.x - 1, y: plane_head.y + 1 }, { x: plane_head.x - 1, y: plane_head.y + 2 }, { x: plane_head.x - 1, y: plane_head.y - 1 }, { x: plane_head.x - 1, y: plane_head.y - 2 }, { x: plane_head.x - 2, y: plane_head.y }, { x: plane_head.x - 3, y: plane_head.y + 1 }, { x: plane_head.x - 3, y: plane_head.y - 1 });
+    }
+    return PlaneBodyPos;
+}
+exports.getPlaneBodyPos = getPlaneBodyPos;

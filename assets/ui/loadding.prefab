@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "VS_self_block",
+    "_name": "loadding",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -21,13 +21,10 @@
     "_components": [
       {
         "__id__": 2
-      },
-      {
-        "__id__": 3
       }
     ],
     "_prefab": {
-      "__id__": 4
+      "__id__": 3
     },
     "_opacity": 255,
     "_color": {
@@ -39,13 +36,13 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 35,
-      "height": 35
+      "width": 435,
+      "height": 192
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0,
-      "y": 0
+      "x": 0.5,
+      "y": 0.5
     },
     "_trs": {
       "__type__": "TypedArray",
@@ -92,10 +89,10 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "e671163a-a148-43b4-a368-eae436952809"
+      "__uuid__": "15749db3-bbd9-4c26-988e-ccfe18f30b6c"
     },
     "_type": 0,
-    "_sizeMode": 0,
+    "_sizeMode": 1,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -109,41 +106,12 @@
     "_id": ""
   },
   {
-    "__type__": "8ba90smqPlJPqiwt81MJEnw",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "padding": 0,
-    "block_x": null,
-    "block_y": null,
-    "body_plane": {
-      "__uuid__": "84a2cb5e-22aa-4ddf-b3cc-8737c770849f"
-    },
-    "head_plane": {
-      "__uuid__": "db58c99e-f2c6-4235-ab93-03b0ee5c67c0"
-    },
-    "body_plane_crater": {
-      "__uuid__": "95eb1032-8cff-49ce-b3ca-fd03fe00055a"
-    },
-    "head_plane_crater": {
-      "__uuid__": "ba9fdd1b-0761-41fb-be90-888ff20d266b"
-    },
-    "block_crater": {
-      "__uuid__": "ac26ae30-193b-4487-a02b-b12ebbb0bb76"
-    },
-    "plane": false,
-    "_id": ""
-  },
-  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "941012ec-92d2-429f-bc7b-eb9980f89262"
+      "__uuid__": "82994c53-a219-4429-ae0a-d45f94a25ebf"
     },
     "fileId": "",
     "sync": false

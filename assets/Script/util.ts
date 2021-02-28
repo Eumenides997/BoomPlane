@@ -92,19 +92,92 @@ export function setBroadcastCallbacks(room: MGOBE.Room, context: any, broadcastC
 // SDK 发送实时服务器消息
 export function sendToGameSvr(type: string, data: any) {
     console.log(`正在发送房间消息`, type, data);
-
     const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
         data: {
             type: type,
             data: data
         },
     };
-
     global.room.sendToGameSvr(sendToGameSvrPara, event => {
         if (event.code === MGOBE.ErrCode.EC_OK) {
             console.log(`发送实时服务器消息成功:`, data);
         } else {
             console.log(`发送实时服务器消息失败，错误码：${event.code}`);
+        }
+    });
+}
+
+//计算并返回飞机的全部坐标
+export function getPlanePos(PlaneData: any) {
+
+    var plane_head = PlaneData.head
+    var plane_tail = PlaneData.tail
+
+    var PlanePos = []//用于存储飞机坐标
+
+    PlanePos.push({ x: plane_head.x, y: plane_head.y, head: true })
+    PlanePos.push({ x: plane_tail.x, y: plane_tail.y })//机头机尾不用分类讨论直接存储
+
+    if (plane_head.x === plane_tail.x) {
+        if (plane_head.y > plane_tail.y) {//机头朝上
+            PlanePos.push(
+                { x: plane_head.x, y: plane_head.y - 1 },
+                { x: plane_head.x - 1, y: plane_head.y - 1 },
+                { x: plane_head.x - 2, y: plane_head.y - 1 },
+                { x: plane_head.x + 1, y: plane_head.y - 1 },
+                { x: plane_head.x + 2, y: plane_head.y - 1 },
+                { x: plane_head.x, y: plane_head.y - 2 },
+                { x: plane_head.x - 1, y: plane_head.y - 3 },
+                { x: plane_head.x + 1, y: plane_head.y - 3 }
+            )
+        } else {//机头朝下
+            PlanePos.push(
+                { x: plane_head.x, y: plane_head.y + 1 },
+                { x: plane_head.x - 1, y: plane_head.y + 1 },
+                { x: plane_head.x - 2, y: plane_head.y + 1 },
+                { x: plane_head.x + 1, y: plane_head.y + 1 },
+                { x: plane_head.x + 2, y: plane_head.y + 1 },
+                { x: plane_head.x, y: plane_head.y + 2 },
+                { x: plane_head.x - 1, y: plane_head.y + 3 },
+                { x: plane_head.x + 1, y: plane_head.y + 3 }
+            )
+        }
+    } else if (plane_head.x < plane_tail.x) {//机头朝左
+        PlanePos.push(
+            { x: plane_head.x + 1, y: plane_head.y },
+            { x: plane_head.x + 1, y: plane_head.y + 1 },
+            { x: plane_head.x + 1, y: plane_head.y + 2 },
+            { x: plane_head.x + 1, y: plane_head.y - 1 },
+            { x: plane_head.x + 1, y: plane_head.y - 2 },
+            { x: plane_head.x + 2, y: plane_head.y },
+            { x: plane_head.x + 3, y: plane_head.y + 1 },
+            { x: plane_head.x + 3, y: plane_head.y - 1 }
+        )
+    } else {//机头朝右
+        PlanePos.push(
+            { x: plane_head.x - 1, y: plane_head.y },
+            { x: plane_head.x - 1, y: plane_head.y + 1 },
+            { x: plane_head.x - 1, y: plane_head.y + 2 },
+            { x: plane_head.x - 1, y: plane_head.y - 1 },
+            { x: plane_head.x - 1, y: plane_head.y - 2 },
+            { x: plane_head.x - 2, y: plane_head.y },
+            { x: plane_head.x - 3, y: plane_head.y + 1 },
+            { x: plane_head.x - 3, y: plane_head.y - 1 }
+        )
+    }
+    return PlanePos
+
+}
+
+// SDK 退出房间
+export function leaveRoom() {
+    console.log(`正在退出房间`);
+    cc.director.loadScene("Home");
+    global.room.leaveRoom({}, event => {
+        if (event.code === MGOBE.ErrCode.EC_OK) {
+            console.log(`退出房间成功`);
+        } else {
+            console.log(`退出房间失败，错误码：${event.code}`);
         }
     });
 }

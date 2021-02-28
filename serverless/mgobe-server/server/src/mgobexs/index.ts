@@ -1,17 +1,17 @@
 import { mgobexsInterface } from './mgobexsInterface';
-import { clearGameState, GameData, initGameState, setPlayer, SyncType } from './GameServerState';
+import { GameData, initGameState, setPlayer, setData } from './GameServerState';
 
 const gameServer: mgobexsInterface.GameServer.IGameServer = {
 	mode: 'async',
 	onInitGameData: function (): mgobexsInterface.GameData {
 		return {
 			// syncType: SyncType.msg,
-			timer: undefined,
-			players: [],
-			craters: [],
-			planes: [],
-			data: [],
-			state: "",
+			// timer: undefined,
+			// players: [],
+			// craters: [],
+			// planes: [],
+			// data: [],
+			// state: "",
 		};
 	},
 	onRecvFromClient: function ({ actionData, sender, gameData, SDK, room, exports }: mgobexsInterface.ActionArgs<mgobexsInterface.UserDefinedData>) {
@@ -19,6 +19,7 @@ const gameServer: mgobexsInterface.GameServer.IGameServer = {
 		setPlayer(sender, actionData, gameData as GameData);
 	},
 	onJoinRoom: function ({ actionData, gameData, SDK, room, exports }) {
+		setData(actionData, gameData as GameData)
 		// 初始化玩家到游戏数据中
 		// initPlayer(actionData.joinPlayerId, gameData as GameData, 0, room.playerList.findIndex(p => p.id === actionData.joinPlayerId));
 	},
