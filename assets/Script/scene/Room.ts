@@ -17,13 +17,6 @@ export enum SyncType {
 
 const { ccclass, property } = cc._decorator;
 
-export enum StateSyncCmd {
-    up = 1,
-    down = 2,
-    left = 3,
-    right = 4,
-}
-
 @ccclass
 export default class NewClass extends cc.Component {
 
@@ -60,9 +53,6 @@ export default class NewClass extends cc.Component {
 
         // Util.sendToGameSvr("user", MGOBE.Player.id)
 
-        //进入房间发送玩家信息给服务器
-        console.log("MGOBE.Player.id:", MGOBE.Player.id)
-
         this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, Util.leaveRoom);
 
         //提交飞机布局
@@ -90,7 +80,7 @@ export default class NewClass extends cc.Component {
 
     setRoomView() {
         const roomInfo = global.room && global.room.roomInfo || { playerList: [], owner: undefined } as MGOBE.types.RoomInfo;
-        console.log('房间信息:', roomInfo)
+        // console.log('房间信息:', roomInfo)
         this.room_id_label.string = roomInfo.id
         this.player_count_label.string = roomInfo.playerList.length.toString()
     }
@@ -100,8 +90,8 @@ export default class NewClass extends cc.Component {
         if (stateSyncState.state === "准备就绪" || stateSyncState.state === "游戏中") {
             cc.director.loadScene("VS")
         }
+        this.setRoomView()
     }
-
 
     /////////////////////////////////// SDK 操作 ///////////////////////////////////
     // SDK Room 更新回调
@@ -142,30 +132,10 @@ export default class NewClass extends cc.Component {
         });
     }
 
-    // SDK 发送实时服务器消息
-    // sendToGameSvr(type: string, data: any) {
-    //     console.log(`正在发送房间消息`);
-
-    //     const sendToGameSvrPara: MGOBE.types.SendToGameSvrPara = {
-    //         data: {
-    //             type: type,
-    //             data: data
-    //         },
-    //     };
-
-    //     global.room.sendToGameSvr(sendToGameSvrPara, event => {
-    //         if (event.code === MGOBE.ErrCode.EC_OK) {
-    //             console.log(`发送实时服务器消息成功:`, data);
-    //         } else {
-    //             console.log(`发送实时服务器消息失败，错误码：${event.code}`);
-    //         }
-    //     });
-    // }
-
     /////////////////////////////////// SDK 广播 ///////////////////////////////////
     // SDK 玩家退房广播
     onLeaveRoom(event: MGOBE.types.BroadcastEvent<MGOBE.types.LeaveRoomBst>) {
-        console.log(`广播：玩家退房`);
+        console.log(`广播：玩家退房`, event.data);
     }
     // SDK 实时服务器广播
     onRecvFromGameSvr(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromGameSvrBst>) {

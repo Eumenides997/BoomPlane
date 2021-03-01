@@ -45,8 +45,7 @@ export default class NewClass extends cc.Component {
 
     update(dt) {
         if (stateSyncState.state === "游戏结束") {
-            this.btn_again.node.x = -60
-            this.btn_quit.node.x = 60
+            this.btn_again.node.x = 0
         } else if (stateSyncState.state === "开始准备") {
             cc.director.loadScene("Room");
         } else if (stateSyncState.state === "准备就绪") {
