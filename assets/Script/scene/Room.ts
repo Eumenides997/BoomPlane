@@ -33,7 +33,7 @@ export default class NewClass extends cc.Component {
     player_count_label: cc.Label = null;
 
     @property(cc.Prefab)
-    loadding: cc.Prefab = null;
+    ready_pre: cc.Prefab = null;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -51,12 +51,19 @@ export default class NewClass extends cc.Component {
             ]
         );
 
+
         // Util.sendToGameSvr("user", MGOBE.Player.id)
 
         this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, Util.leaveRoom);
 
         //提交飞机布局
-        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, this.onSubmmit_btn);
+        var ready = cc.instantiate(this.ready_pre)
+        this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () =>
+            (
+                this.node.addChild(ready),
+                ready.setPosition(cc.v2(0, 0)),
+                Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
+            ));
 
         this.setRoomView()
 

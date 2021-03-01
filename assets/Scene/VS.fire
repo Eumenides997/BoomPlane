@@ -180,7 +180,7 @@
       "array": [
         0,
         0,
-        338.04824558791324,
+        338.7805280381125,
         0,
         0,
         0,
@@ -1911,8 +1911,11 @@
       "__id__": 28
     },
     "text": "hello",
-    "loadding": {
-      "__uuid__": "82994c53-a219-4429-ae0a-d45f94a25ebf"
+    "win_pre": {
+      "__uuid__": "29eebbbb-e48e-458a-8546-b6da9dd9abd5"
+    },
+    "lose_pre": {
+      "__uuid__": "5b7d2b26-ab39-49d8-b426-e42d7fe56eda"
     },
     "_id": "07D/SYDjVNdY4blqNwX274"
   }

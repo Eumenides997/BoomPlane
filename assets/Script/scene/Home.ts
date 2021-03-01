@@ -44,7 +44,7 @@ export default class Home extends cc.Component {
     start() {
         this.createRoomButton.node.on(cc.Node.EventType.TOUCH_START, () => this.createRoom());
         this.joinRoomButton.node.on(cc.Node.EventType.TOUCH_START, () => cc.director.loadScene("JoinRoom"));
-        this.matchPlaerButton.node.on(cc.Node.EventType.TOUCH_START, () => this.matchPlayers(configs.matchCode));
+        this.matchPlaerButton.node.on(cc.Node.EventType.TOUCH_START, () => cc.director.loadScene("MatchRoom"));
         // console.log("this is home")
         this.initSDK()
     }
@@ -117,46 +117,6 @@ export default class Home extends cc.Component {
             }
         });
     }
-   
-    // SDK 随机匹配
-    matchPlayers(matchCode: string) {
-        if (!matchCode) {
-            return console.log(`请输入正确的匹配 Code`);
-        }
-        //添加loadding预置资源
-        var loadding = cc.instantiate(this.loadding)
-        this.node.addChild(loadding)
-        loadding.setPosition(cc.v2(0, 0))
 
-        this.timer = setInterval(() => console.log(`正在随机匹配，请稍等。`), 1000);
-        console.log(`正在随机匹配，匹配Code：${matchCode}。请稍等，默认超时时间为 10 秒。`);
 
-        // 注意：这里没有使用匹配属性，如果匹配规则中有设置匹配属性，这里需要做调整
-        const matchAttributes: MGOBE.types.MatchAttribute[] = [];
-
-        const playerInfo: MGOBE.types.MatchPlayerInfoPara = {
-            name: "测试玩家",
-            customPlayerStatus: 0,
-            customProfile: "",
-            matchAttributes,
-        };
-
-        const matchPlayersPara: MGOBE.types.MatchPlayersPara = {
-            matchCode,
-            playerInfo,
-        };
-
-        global.room.initRoom();
-        global.room.matchPlayers(matchPlayersPara, event => {
-            clearInterval(this.timer);
-            //删除loadding预置资源
-            loadding.destroy()
-            if (event.code === MGOBE.ErrCode.EC_OK) {
-                console.log(`随机匹配成功，房间ID：${event.data.roomInfo.id}`);
-                this.loadRoomScene()
-            } else {
-                console.log(`随机匹配失败，错误码：${event.code}`);
-            }
-        });
-    }
 }
