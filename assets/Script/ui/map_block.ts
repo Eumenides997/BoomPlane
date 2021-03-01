@@ -6,7 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import { stateSyncState, setPlayerPlanesState } from "../logic/StateSyncLogic";
-import { getPlanePos } from "../util"
+import { getPlanePos, correct_plane, judge_plane } from "../util"
 
 const { ccclass, property } = cc._decorator;
 
@@ -60,7 +60,10 @@ export default class NewClass extends cc.Component {
 
     //按飞机id逆时针旋转飞机
     rotatePlane(id: string) {
-        var stateSyncState2 = []
+        var playerPlanes = []
+        stateSyncState.playerPlanes.forEach(p => {
+            playerPlanes.push(p)
+        })
         for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
             var players = stateSyncState.playerPlanes[k]
             var PlaneData = players.PlaneData
@@ -95,15 +98,15 @@ export default class NewClass extends cc.Component {
                     players.PlaneData.tail.x += 2
                     players.PlaneData.tail.y -= 2
                 }
-                stateSyncState2.push(players)
-            } else {
-                stateSyncState2.push(players)
             }
         }
         // console.log("stateSyncState2: ", stateSyncState2)
-        setPlayerPlanesState(stateSyncState2)
+        var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
+        console.log("是否重叠:", judge)
+        if (judge) {
+            setPlayerPlanesState(playerPlanes)
+        }
         // console.log("stateSyncState: ", stateSyncState)
-        this.map.map_init()
     }
 
     onTouchStart(event) {
@@ -117,7 +120,8 @@ export default class NewClass extends cc.Component {
             //旋转
             // console.log("旋转plane: ", PlaneData.id)
             this.rotatePlane(PlaneData.id)
-
+            correct_plane()
+            this.map.map_init()
         }
     }
 
@@ -132,7 +136,7 @@ export default class NewClass extends cc.Component {
 
     //移动飞机按位移坐标
     movePlane(dit_x, dit_y, id) {
-        var stateSyncState2 = []
+        var playerPlanes = []
         for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
             var players = stateSyncState.playerPlanes[k]
             var PlaneData = players.PlaneData
@@ -141,16 +145,15 @@ export default class NewClass extends cc.Component {
                 players.PlaneData.head.y += dit_y
                 players.PlaneData.tail.x += dit_x
                 players.PlaneData.tail.y += dit_y
-                stateSyncState2.push(players)
-            } else {
-                stateSyncState2.push(players)
             }
-
         }
         // console.log("stateSyncState2: ", stateSyncState2)
-        setPlayerPlanesState(stateSyncState2)
+        var judge = judge_plane(playerPlanes)//判断飞机是否重叠
+        console.log("是否重叠:", judge)
+        if (judge) {
+            setPlayerPlanesState(playerPlanes)
+        }
         // console.log("stateSyncState: ", stateSyncState)
-        this.map.map_init()
     }
 
     onTouchCancel(event) {
@@ -173,6 +176,8 @@ export default class NewClass extends cc.Component {
             //移动飞机
             var PlaneData = this.getBlockData()
             this.movePlane(dit_x, dit_y, PlaneData.id)
+            correct_plane()
+            this.map.map_init()
         }
     }
 
