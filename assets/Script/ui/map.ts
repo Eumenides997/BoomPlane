@@ -46,7 +46,7 @@ export default class NewClass extends cc.Component {
                 map_block.block_x = block_x
                 map_block.block_y = block_y
                 //遍历所有飞机
-                stateSyncState.playerPlanes.find(p => {
+                stateSyncState.playerPlanes.forEach(p => {
                     var PlaneData = p.PlaneData
                     var planePos = getPlanePos(PlaneData)
                     planePos.find(p => {
@@ -58,6 +58,12 @@ export default class NewClass extends cc.Component {
                             }
                         }
                     })
+                })
+                //遍历所有重叠部分
+                stateSyncState.warmBlock.forEach(p => {
+                    if (p.x === block_x && p.y === block_y) {
+                        map_block.show_warm()
+                    }
                 })
 
                 // for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {

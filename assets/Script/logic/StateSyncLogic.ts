@@ -1,4 +1,4 @@
-import { GameState, PlayerPlaneData, CraterData } from "./GameState";
+import { GameState, PlayerPlaneData, CraterData, WarmBlock } from "./GameState";
 
 // 状态同步逻辑状态
 export const stateSyncState: GameState = {
@@ -7,6 +7,7 @@ export const stateSyncState: GameState = {
     craters_enemy: [],//敌人弹坑信息
     players: [],//玩家情况
     state: "",//游戏状态
+    warmBlock: [],//飞机重叠部分
 };
 
 // 设置默认的状态同步逻辑状态
@@ -57,6 +58,18 @@ export function setCratersState(data: any) {
         } else {
             stateSyncState.craters_self.push(crater);
         }
+    })
+}
+
+//设置飞机重叠部分
+export function setWarmBlock(pos) {
+    stateSyncState.warmBlock = []
+    pos.forEach(p => {
+        const warmBlock: WarmBlock = {
+            x: p.x,
+            y: p.y
+        }
+        stateSyncState.warmBlock.push(warmBlock)
     })
 }
 

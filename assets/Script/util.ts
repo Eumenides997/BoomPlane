@@ -1,6 +1,6 @@
 import configs from "./config";
 import global from "./global";
-import { stateSyncState, setPlayerPlanesState } from "./logic/StateSyncLogic";
+import { stateSyncState, setPlayerPlanesState, setWarmBlock } from "./logic/StateSyncLogic";
 
 /**
  * 初始化 MGOBE SDK
@@ -111,31 +111,27 @@ export function sendToGameSvr(type: string, data: any) {
 //判断飞机是否重叠
 export function judge_plane(playerPlanes: any): boolean {
     var flag = false
+    var position = []
     for (var i = 0; i < playerPlanes.length; i++) {
         for (var j = i + 1; j < playerPlanes.length; j++) {
             var pos = getPlanePos(playerPlanes[i].PlaneData)//第i飞机的全部坐标
             var pos2 = getPlanePos(playerPlanes[j].PlaneData)//第i+1+n飞机的全部坐标
-            pos.find(p => {
-                pos2.find(p2 => {
+            pos.forEach(p => {
+                pos2.forEach(p2 => {
                     if (p.x === p2.x && p.y === p2.y) {//重叠
-                        // console.log("重叠")
+                        // console.log("重叠", p.x, "=", p.y)
+                        position.push({
+                            x: p.x,
+                            y: p.y
+                        })
                         flag = true
-                        return true
                     }
                 })
-                if (flag) {
-                    return true
-                }
             })
-            if (flag) {
-                return true
-            }
-        }
-        if (flag) {
-            return true
         }
     }
     // console.log("不重叠")
+    setWarmBlock(position)
     return flag
 }
 

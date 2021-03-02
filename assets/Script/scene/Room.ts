@@ -8,6 +8,7 @@
 import global from "../global";
 import * as Util from "../util";
 import { setPlayerPlanesState, stateSyncState, setState } from "../logic/StateSyncLogic";
+import { correct_plane, judge_plane } from "../util"
 
 export enum SyncType {
     msg = "房间内发消息",
@@ -26,6 +27,9 @@ export default class NewClass extends cc.Component {
     @property(cc.Button)
     submmit_btn: cc.Button = null;
 
+    @property(cc.Button)
+    random_btn: cc.Button = null;
+
     @property(cc.Label)
     room_id_label: cc.Label = null;
 
@@ -35,26 +39,23 @@ export default class NewClass extends cc.Component {
     @property(cc.Prefab)
     ready_pre: cc.Prefab = null;
 
+    @property(cc.Node)
+    map: cc.Node = null;
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start() {
-        setPlayerPlanesState(
-            [
-                { id: MGOBE.Player.id, PlaneData: { id: 1, head: { x: 3, y: 15 }, tail: { x: 3, y: 12 } } },
-                { id: MGOBE.Player.id, PlaneData: { id: 2, head: { x: 3, y: 1 }, tail: { x: 3, y: 4 } } },
-                { id: MGOBE.Player.id, PlaneData: { id: 3, head: { x: 14, y: 5 }, tail: { x: 11, y: 5 } } },
-                // { id: "2", PlaneData: { id: 21, head: { x: 5, y: 5 }, tail: { x: 8, y: 5 } } }, ,
-                // { id: "2", PlaneData: { id: 22, head: { x: 8, y: 9 }, tail: { x: 11, y: 9 } } }, ,
-                // { id: "2", PlaneData: { id: 23, head: { x: 10, y: 20 }, tail: { x: 13, y: 20 } } },
-            ]
-        );
-
+        var map = this.map.getComponent("map")
+        
+        this.onRandom(map)
 
         // Util.sendToGameSvr("user", MGOBE.Player.id)
 
         this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, Util.leaveRoom);
+
+        this.random_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.onRandom(map));
 
         //提交飞机布局
         var ready = cc.instantiate(this.ready_pre)
@@ -78,6 +79,63 @@ export default class NewClass extends cc.Component {
         }
 
         // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, () => this.sendToGameSvr(StateSyncCmd.up), this);
+    }
+
+    onRandom(map) {
+        var pos = []
+        for (var i = 0; i < 3; i++) {
+            var head_x = parseInt((Math.random() * 19 + 1).toString())//机头x坐标 1->20
+            var head_y = parseInt((Math.random() * 27 + 1).toString())//机头y坐标 1->28
+            var direction = parseInt((Math.random() * 4).toString())//机头方向
+            if (direction === 0) {//机头朝上
+                var tail_x = head_x//机尾x坐标
+                var tail_y = head_y - 3//机尾y坐标
+            } else if (direction === 1) {//机头朝下
+                var tail_x = head_x//机尾x坐标
+                var tail_y = head_y + 3//机尾y坐标
+            } else if (direction === 2) {//机头朝左
+                var tail_x = head_x + 3//机尾x坐标
+                var tail_y = head_y//机尾y坐标
+            } else {//机头朝右
+                var tail_x = head_x - 3//机尾x坐标
+                var tail_y = head_y//机尾y坐标
+            }
+            console.log("随机坐标(", head_x, ",", head_y, "),(", tail_x, ",", tail_y, ")")
+            pos.push({
+                head_x: head_x,
+                head_y: head_y,
+                tail_x: tail_x,
+                tail_y: tail_y
+            })
+        }
+        var playerPlanes = []
+        pos.forEach((p, key) => {
+            playerPlanes.push({
+                id: MGOBE.Player.id,
+                PlaneData: {
+                    id: key,
+                    head: {
+                        x: p.head_x,
+                        y: p.head_y
+                    },
+                    tail: {
+                        x: p.tail_x,
+                        y: p.tail_y
+                    }
+                }
+            })
+        })
+        // console.log(pos)
+        // console.log(playerPlanes)
+        setPlayerPlanesState(playerPlanes)
+        correct_plane()
+        // console.log(stateSyncState.playerPlanes)
+        var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
+        console.log("是否重叠:", judge)
+        if (judge) {
+            this.onRandom(map)
+        }
+        map.map_init()
     }
 
     onSubmmit_btn() {

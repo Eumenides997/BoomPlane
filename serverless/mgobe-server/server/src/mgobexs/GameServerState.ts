@@ -40,6 +40,7 @@ export interface GameData {
     data: any,
     craters: Crater[],
     state: string,//游戏目前所处状态
+    time: number,//回合时间
 }
 
 //缓存数据
@@ -49,15 +50,14 @@ export function setData(actionData: any, gameData: GameData) {
 
 //当监听事件为有玩家离开房间
 export function listenLeaveRoom(id: string, gameData: GameData) {
-    gameData.players.forEach((p, key) => {//删除离开玩家信息
-        if (p.id === id) {
-            gameData.players.splice(key, 1)
-
-        } else if (gameData.state === "游戏中") {//剩余玩家获胜并结束游戏
-            gameData.players[key].ifWin = true
+    for (var i = 0; i < gameData.players.length; i++) {
+        if (gameData.players[i].id === id) {
+            gameData.players.splice(i, 1)
+        } else {
             gameData.state = "游戏结束"
+            gameData.players[i].ifWin = true
         }
-    })
+    }
 }
 
 // 设置玩家状态
@@ -229,8 +229,6 @@ export function setPlane(id: string, actionData: any, gameData: GameData) {
         }
     }
 }
-
-
 
 export function initGameState(gameData: GameData, args: mgobexsInterface.ActionArgs<any>) {
     gameData.planes = [];

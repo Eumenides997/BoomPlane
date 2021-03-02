@@ -5,7 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { stateSyncState, setPlayerPlanesState } from "../logic/StateSyncLogic";
+import { stateSyncState } from "../logic/StateSyncLogic";
 import { getPlanePos, correct_plane, judge_plane } from "../util"
 
 const { ccclass, property } = cc._decorator;
@@ -28,10 +28,14 @@ export default class NewClass extends cc.Component {
     @property(cc.Prefab)
     head_plane: cc.Prefab = null;
 
+    @property(cc.Prefab)
+    warm_block: cc.Prefab = null;
+
     @property
     plane: boolean = false;
 
     map: any;
+
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -60,10 +64,7 @@ export default class NewClass extends cc.Component {
 
     //按飞机id逆时针旋转飞机
     rotatePlane(id: string) {
-        var playerPlanes = []
-        stateSyncState.playerPlanes.forEach(p => {
-            playerPlanes.push(p)
-        })
+        const playerPlanes = stateSyncState.playerPlanes
         for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
             var players = stateSyncState.playerPlanes[k]
             var PlaneData = players.PlaneData
@@ -103,9 +104,7 @@ export default class NewClass extends cc.Component {
         // console.log("stateSyncState2: ", stateSyncState2)
         var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
         console.log("是否重叠:", judge)
-        if (judge) {
-            setPlayerPlanesState(playerPlanes)
-        }
+
         // console.log("stateSyncState: ", stateSyncState)
     }
 
@@ -136,7 +135,7 @@ export default class NewClass extends cc.Component {
 
     //移动飞机按位移坐标
     movePlane(dit_x, dit_y, id) {
-        var playerPlanes = []
+        const playerPlanes: any = stateSyncState.playerPlanes
         for (var k = 0; k < stateSyncState.playerPlanes.length; k++) {
             var players = stateSyncState.playerPlanes[k]
             var PlaneData = players.PlaneData
@@ -148,11 +147,9 @@ export default class NewClass extends cc.Component {
             }
         }
         // console.log("stateSyncState2: ", stateSyncState2)
-        var judge = judge_plane(playerPlanes)//判断飞机是否重叠
+        var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
         console.log("是否重叠:", judge)
-        if (judge) {
-            setPlayerPlanesState(playerPlanes)
-        }
+
         // console.log("stateSyncState: ", stateSyncState)
     }
 
@@ -191,11 +188,19 @@ export default class NewClass extends cc.Component {
         this.node.addChild(body_plane)
         body_plane.setPosition(cc.v2(0, 0))
     }
+
     //地图块显示飞机机头
     show_plane_head() {
         var head_plane = cc.instantiate(this.head_plane)
         this.node.addChild(head_plane)
         head_plane.setPosition(cc.v2(0, 0))
+    }
+
+    //地图块显示重叠部分
+    show_warm() {
+        var warm_block = cc.instantiate(this.warm_block)
+        this.node.addChild(warm_block)
+        warm_block.setPosition(cc.v2(0, 0))
     }
 
     // update (dt) {}

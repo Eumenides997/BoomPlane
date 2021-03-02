@@ -34,6 +34,12 @@ export interface CraterData {
     type: string//(普通弹坑，飞机机身弹坑，飞机机头弹坑)
 }
 
+//飞机重叠部分
+export interface WarmBlock {
+    x: number,
+    y: number
+}
+
 //游戏全部信息
 export interface GameState {
     playerPlanes: PlayerPlaneData[],//飞机信息
@@ -41,4 +47,5 @@ export interface GameState {
     craters_enemy: CraterData[],//敌人弹坑信息
     players: PlayerData[],//玩家状态
     state: string,//游戏状态
+    warmBlock: WarmBlock[],//飞机重叠部分
 }

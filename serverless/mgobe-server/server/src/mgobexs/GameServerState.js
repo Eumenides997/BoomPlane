@@ -12,9 +12,9 @@ function listenLeaveRoom(id, gameData) {
         if (p.id === id) {
             gameData.players.splice(key, 1);
         }
-        else if (gameData.state === "游戏中") { //剩余玩家获胜并结束游戏
-            gameData.players[key].ifWin = true;
+        else { //剩余玩家获胜并结束游戏
             gameData.state = "游戏结束";
+            p.ifWin = true;
         }
     });
 }
