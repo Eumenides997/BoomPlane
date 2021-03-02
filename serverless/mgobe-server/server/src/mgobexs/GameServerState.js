@@ -8,15 +8,16 @@ function setData(actionData, gameData) {
 exports.setData = setData;
 //当监听事件为有玩家离开房间
 function listenLeaveRoom(id, gameData) {
-    gameData.players.forEach((p, key) => {
+    gameData.state = "游戏结束";
+    gameData.players.find((p, key) => {
         if (p.id === id) {
             gameData.players.splice(key, 1);
         }
-        else { //剩余玩家获胜并结束游戏
-            gameData.state = "游戏结束";
-            p.ifWin = true;
-        }
     });
+    gameData.players.forEach(p => {
+        p.ifWin = true;
+    });
+    gameData.planes = []; //清空摆放飞机信息
 }
 exports.listenLeaveRoom = listenLeaveRoom;
 // 设置玩家状态

@@ -10,6 +10,13 @@ export const stateSyncState: GameState = {
     warmBlock: [],//飞机重叠部分
 };
 
+export function init() {//离开房间初始化数据
+    stateSyncState.state = ""
+    stateSyncState.players = []
+    stateSyncState.craters_self = []
+    stateSyncState.craters_enemy = []
+}
+
 // 设置默认的状态同步逻辑状态
 // export function setDefauleSyncState(room: MGOBE.Room) {
 

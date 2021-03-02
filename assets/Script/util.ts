@@ -1,6 +1,6 @@
 import configs from "./config";
 import global from "./global";
-import { stateSyncState, setPlayerPlanesState, setWarmBlock } from "./logic/StateSyncLogic";
+import { stateSyncState, setPlayerPlanesState, setWarmBlock, init } from "./logic/StateSyncLogic";
 
 /**
  * 初始化 MGOBE SDK
@@ -304,8 +304,10 @@ export function getPlanePos(PlaneData: any) {
 export function leaveRoom() {
     console.log(`正在退出房间`);
     cc.director.loadScene("Home");
+    init()
     global.room.leaveRoom({}, event => {
         if (event.code === MGOBE.ErrCode.EC_OK) {
+            init()
             console.log(`退出房间成功`);
         } else {
             console.log(`退出房间失败，错误码：${event.code}`);
