@@ -8,6 +8,7 @@ export const stateSyncState: GameState = {
     players: [],//玩家情况
     state: "",//游戏状态
     warmBlock: [],//飞机重叠部分
+    time: 10000,//回合倒计时
 };
 
 export function init() {//离开房间初始化数据
@@ -33,6 +34,12 @@ export function setState(data: any) {
     setCratersState(recvData)
     setGameState(recvData)
     setPlayer(recvData)
+    setTime(recvData)
+}
+
+//设置倒计时
+export function setTime(data: any) {
+    stateSyncState.time = data.time
 }
 
 //设置玩家状态

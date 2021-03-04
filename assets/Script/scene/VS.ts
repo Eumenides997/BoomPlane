@@ -7,6 +7,7 @@
 
 import { stateSyncState } from "../logic/StateSyncLogic";
 import * as Util from "../util";
+import bullet from "../ui/bullet"
 
 const { ccclass, property } = cc._decorator;
 
@@ -14,7 +15,7 @@ const { ccclass, property } = cc._decorator;
 export default class NewClass extends cc.Component {
 
     @property(cc.Label)
-    label: cc.Label = null;
+    time: cc.Label = null;
 
     @property(cc.Button)
     btn_again: cc.Button = null;
@@ -38,7 +39,7 @@ export default class NewClass extends cc.Component {
 
     start() {
         this.btn_again.node.x = 9999
-        this.btn_again.node.on(cc.Node.EventType.TOUCH_START, () => (Util.sendToGameSvr("again", "again"), this.enabled = true))
+        this.btn_again.node.on(cc.Node.EventType.TOUCH_START, () => (Util.sendToGameSvr("again", "again"), bullet.setBullet("正在等待对方再来一局")))
         this.btn_quit.node.on(cc.Node.EventType.TOUCH_START, Util.leaveRoom)
     }
 
@@ -47,6 +48,7 @@ export default class NewClass extends cc.Component {
     }
 
     update(dt) {
+        this.time.string = stateSyncState.time.toString()
         if (stateSyncState.state === "游戏结束") {
             this.btn_again.node.x = 0
             this.btn_again.node.y = -230
@@ -63,11 +65,14 @@ export default class NewClass extends cc.Component {
                     }
                 }
             })
-            this.enabled = false
+            // this.enabled = false
+            bullet.setBullet("游戏结束")
         } else if (stateSyncState.state === "开始准备") {
             cc.director.loadScene("Room");
+            bullet.setBullet("开始准备,加载房间中...")
         } else if (stateSyncState.state === "准备就绪") {
             Util.sendToGameSvr("state", "游戏中")
+            bullet.setBullet("游戏开始")
         } else {
             this.btn_again.node.x = 9999
         }

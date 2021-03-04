@@ -9,6 +9,7 @@ import global from "../global";
 import * as Util from "../util";
 import { setPlayerPlanesState, stateSyncState, setState } from "../logic/StateSyncLogic";
 import { correct_plane, judge_plane } from "../util"
+import bullet from "../ui/bullet"
 
 export enum SyncType {
     msg = "房间内发消息",
@@ -47,8 +48,9 @@ export default class NewClass extends cc.Component {
     // onLoad () {}
 
     start() {
+
         var map = this.map.getComponent("map")
-        
+
         this.onRandom(map)
 
         // Util.sendToGameSvr("user", MGOBE.Player.id)
@@ -61,9 +63,9 @@ export default class NewClass extends cc.Component {
         var ready = cc.instantiate(this.ready_pre)
         this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () =>
             (
-                this.node.addChild(ready),
-                ready.setPosition(cc.v2(0, 0)),
-                Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
+                // this.node.addChild(ready),
+                // ready.setPosition(cc.v2(0, 0)),
+                this.onSubmmit_btn(this.node, ready)
             ));
 
         this.setRoomView()
@@ -100,7 +102,7 @@ export default class NewClass extends cc.Component {
                 var tail_x = head_x - 3//机尾x坐标
                 var tail_y = head_y//机尾y坐标
             }
-            console.log("随机坐标(", head_x, ",", head_y, "),(", tail_x, ",", tail_y, ")")
+            // console.log("随机坐标(", head_x, ",", head_y, "),(", tail_x, ",", tail_y, ")")
             pos.push({
                 head_x: head_x,
                 head_y: head_y,
@@ -131,16 +133,25 @@ export default class NewClass extends cc.Component {
         correct_plane()
         // console.log(stateSyncState.playerPlanes)
         var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
-        console.log("是否重叠:", judge)
+        // console.log("是否重叠:", judge)
         if (judge) {
             this.onRandom(map)
         }
         map.map_init()
     }
 
-    onSubmmit_btn() {
+    onSubmmit_btn(self, ready) {
         // cc.director.loadScene("VS")
-        Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
+        var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
+        // console.log("是否重叠:", judge)
+        if (!judge) {
+            self.addChild(ready)
+            ready.setPosition(cc.v2(0, 0))
+            Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
+        } else {
+            // console.log("重叠")
+            bullet.setBullet("飞机重叠,请更正摆放")
+        }
     }
 
     setRoomView() {
@@ -153,6 +164,7 @@ export default class NewClass extends cc.Component {
     update(dt) {
         // console.log("游戏信息: ", stateSyncState)
         if (stateSyncState.state === "准备就绪" || stateSyncState.state === "游戏中") {
+            bullet.setBullet("玩家全部确认,正在进入游戏...")
             cc.director.loadScene("VS")
         }
         this.setRoomView()
@@ -185,22 +197,23 @@ export default class NewClass extends cc.Component {
 
 
     // SDK 解散房间
-    dismissRoom() {
-        console.log(`正在解散房间`);
+    // dismissRoom() {
+    //     console.log(`正在解散房间`);
 
-        global.room.dismissRoom({}, event => {
-            if (event.code === MGOBE.ErrCode.EC_OK) {
-                console.log(`解散房间成功`);
-            } else {
-                console.log(`解散房间失败，错误码：${event.code}`);
-            }
-        });
-    }
+    //     global.room.dismissRoom({}, event => {
+    //         if (event.code === MGOBE.ErrCode.EC_OK) {
+    //             console.log(`解散房间成功`);
+    //         } else {
+    //             console.log(`解散房间失败，错误码：${event.code}`);
+    //         }
+    //     });
+    // }
 
     /////////////////////////////////// SDK 广播 ///////////////////////////////////
     // SDK 玩家退房广播
     onLeaveRoom(event: MGOBE.types.BroadcastEvent<MGOBE.types.LeaveRoomBst>) {
-        console.log(`广播：玩家退房`, event.data);
+        // console.log(`广播：玩家退房`, event.data);
+        bullet.setBullet("玩家退出房间")
     }
     // SDK 实时服务器广播
     onRecvFromGameSvr(event: MGOBE.types.BroadcastEvent<MGOBE.types.RecvFromGameSvrBst>) {

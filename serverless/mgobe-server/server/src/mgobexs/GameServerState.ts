@@ -166,6 +166,8 @@ export function setCrater(id: string, actionData: any, gameData: GameData) {
                     gameData.players.forEach(p => {
                         p.ifBomb = p.ifBomb ? false : true
                     })
+                    //倒计时初始化
+                    gameData.time = 10000
                 }
             }
         })
@@ -232,14 +234,35 @@ export function setPlane(id: string, actionData: any, gameData: GameData) {
     }
 }
 
+//超时后回合方判负,游戏结束
+export function outTime(gameData: GameData) {
+    gameData.players.forEach(p => {
+        if (p.ifBomb) {
+            p.ifWin = false
+        } else {
+            p.ifWin = true
+        }
+    })
+    gameData.state = "游戏结束"
+    clearGameState
+}
+
 export function initGameState(gameData: GameData, args: mgobexsInterface.ActionArgs<any>) {
     gameData.planes = [];
     gameData.data = [];
     gameData.craters = [];
     gameData.state = gameData.state;
     gameData.players = [];
+    gameData.time = 10000
     // 初始化后，开始定时向客户端推送游戏状态
     gameData.timer = setInterval(() => {
+        if (gameData.state === "游戏中") {//游戏中开始回合倒计时
+            gameData.time -= 15
+            if (gameData.time < 0) {
+                //回合方判负,游戏结束
+                outTime(gameData)
+            }
+        }
         args.SDK.sendData({ playerIdList: [], data: { recvGameData: gameData } });
     }, 1000 / 15);
 }
@@ -249,6 +272,7 @@ export function clearGameState(gameData: GameData) {
     gameData.planes = [];//清空摆放飞机信息
     gameData.craters = []//清空弹坑信息
     gameData.players = []
+    gameData.time = 10000
 }
 
 //获取所有机身位置

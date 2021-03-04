@@ -48,4 +48,5 @@ export interface GameState {
     players: PlayerData[],//玩家状态
     state: string,//游戏状态
     warmBlock: WarmBlock[],//飞机重叠部分
+    time: number,//回合倒计时
 }

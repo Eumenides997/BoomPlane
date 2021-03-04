@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPlaneBodyPos = exports.clearGameState = exports.initGameState = exports.setPlane = exports.setCrater = exports.setGameData = exports.listenLeaveRoom = exports.setData = void 0;
+exports.getPlaneBodyPos = exports.clearGameState = exports.initGameState = exports.outTime = exports.setPlane = exports.setCrater = exports.setGameData = exports.listenLeaveRoom = exports.setData = void 0;
 //缓存数据
 function setData(actionData, gameData) {
     gameData.data = actionData;
@@ -9,15 +9,15 @@ exports.setData = setData;
 //当监听事件为有玩家离开房间
 function listenLeaveRoom(id, gameData) {
     gameData.state = "游戏结束";
+    gameData.players.forEach(p => {
+        p.ifWin = true;
+    });
+    gameData.planes = []; //清空摆放飞机信息
     gameData.players.find((p, key) => {
         if (p.id === id) {
             gameData.players.splice(key, 1);
         }
     });
-    gameData.players.forEach(p => {
-        p.ifWin = true;
-    });
-    gameData.planes = []; //清空摆放飞机信息
 }
 exports.listenLeaveRoom = listenLeaveRoom;
 // 设置玩家状态
@@ -117,6 +117,8 @@ function setCrater(id, actionData, gameData) {
                     gameData.players.forEach(p => {
                         p.ifBomb = p.ifBomb ? false : true;
                     });
+                    //倒计时初始化
+                    gameData.time = 10000;
                 }
             }
         });
@@ -182,14 +184,36 @@ function setPlane(id, actionData, gameData) {
     }
 }
 exports.setPlane = setPlane;
+//超时后回合方判负,游戏结束
+function outTime(gameData) {
+    gameData.players.forEach(p => {
+        if (p.ifBomb) {
+            p.ifWin = false;
+        }
+        else {
+            p.ifWin = true;
+        }
+    });
+    gameData.state = "游戏结束";
+    clearGameState;
+}
+exports.outTime = outTime;
 function initGameState(gameData, args) {
     gameData.planes = [];
     gameData.data = [];
     gameData.craters = [];
     gameData.state = gameData.state;
     gameData.players = [];
+    gameData.time = 10000;
     // 初始化后，开始定时向客户端推送游戏状态
     gameData.timer = setInterval(() => {
+        if (gameData.state === "游戏中") { //游戏中开始回合倒计时
+            gameData.time -= 15;
+            if (gameData.time < 0) {
+                //回合方判负,游戏结束
+                outTime(gameData);
+            }
+        }
         args.SDK.sendData({ playerIdList: [], data: { recvGameData: gameData } });
     }, 1000 / 15);
 }
@@ -199,6 +223,7 @@ function clearGameState(gameData) {
     gameData.planes = []; //清空摆放飞机信息
     gameData.craters = []; //清空弹坑信息
     gameData.players = [];
+    gameData.time = 10000;
 }
 exports.clearGameState = clearGameState;
 //获取所有机身位置
