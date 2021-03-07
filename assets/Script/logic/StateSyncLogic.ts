@@ -1,4 +1,6 @@
 import { GameState, PlayerPlaneData, CraterData, WarmBlock } from "./GameState";
+import VS_map_self from "../ui/VS_map_self"
+import VS_map_enemy from "../ui/VS_map_enemy"
 
 // 状态同步逻辑状态
 export const stateSyncState: GameState = {
@@ -8,7 +10,10 @@ export const stateSyncState: GameState = {
     players: [],//玩家情况
     state: "",//游戏状态
     warmBlock: [],//飞机重叠部分
-    time: 10000,//回合倒计时
+    time: 0,//回合倒计时
+    bombPos: { x: 0, y: 0 },
+    signPos: [],
+    flag_plane: true
 };
 
 export function init() {//离开房间初始化数据
@@ -16,6 +21,7 @@ export function init() {//离开房间初始化数据
     stateSyncState.players = []
     stateSyncState.craters_self = []
     stateSyncState.craters_enemy = []
+    stateSyncState.time = 0
 }
 
 // 设置默认的状态同步逻辑状态
@@ -39,7 +45,7 @@ export function setState(data: any) {
 
 //设置倒计时
 export function setTime(data: any) {
-    stateSyncState.time = data.time
+    stateSyncState.time = data.time / 1000
 }
 
 //设置玩家状态
@@ -58,21 +64,25 @@ export function setCratersState(data: any) {
     if (!Array.isArray(craters)) {
         return;
     }
-    stateSyncState.craters_self = [];
-    stateSyncState.craters_enemy = [];
-    craters.forEach(p => {
-        const crater: CraterData = {
-            id: p.userId,
-            x: p.x,
-            y: p.y,
-            type: p.type
-        }
-        if (p.userId === MGOBE.Player.id) {//判断该炸弹是不是自己扔的
-            stateSyncState.craters_enemy.push(crater);
-        } else {
-            stateSyncState.craters_self.push(crater);
-        }
-    })
+    if (craters.length !== (stateSyncState.craters_self.length + stateSyncState.craters_enemy.length)) {//判断是否有新的弹坑数据
+        stateSyncState.craters_self = [];
+        stateSyncState.craters_enemy = [];//初始化
+        craters.forEach(p => {
+            const crater: CraterData = {
+                id: p.userId,
+                x: p.x,
+                y: p.y,
+                type: p.type
+            }
+            if (p.userId === MGOBE.Player.id) {//判断该炸弹是不是自己扔的
+                stateSyncState.craters_enemy.push(crater);
+            } else {
+                stateSyncState.craters_self.push(crater);
+            }
+        })
+        VS_map_self.setUpdate()
+        VS_map_enemy.setUpdate()
+    }
 }
 
 //设置飞机重叠部分

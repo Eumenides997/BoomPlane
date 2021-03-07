@@ -29,7 +29,8 @@ export default class NewClass extends cc.Component {
     // onLoad () {}
 
     start() {
-        this.cancel_btn.node.on(cc.Node.EventType.TOUCH_START, () => (cc.director.loadScene("Home"), this.flag = false));
+        this.cancel_btn.node.on(cc.Node.EventType.TOUCH_START, () => (cc.director.loadScene("Home"),
+            clearInterval(this.timer), this.flag = false));
         this.matchPlayers(configs.matchCode)
     }
 
@@ -64,9 +65,9 @@ export default class NewClass extends cc.Component {
             clearInterval(this.timer);
             if (event.code === MGOBE.ErrCode.EC_OK) {
                 console.log(`随机匹配成功，房间ID：${event.data.roomInfo.id}`);
-                if(this.flag){
+                if (this.flag) {
                     cc.director.loadScene("Room")
-                }else{
+                } else {
                     Util.leaveRoom()
                 }
             } else {

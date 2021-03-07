@@ -39,8 +39,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 35,
-      "height": 35
+      "width": 46,
+      "height": 46
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -127,6 +127,12 @@
     },
     "block_crater": {
       "__uuid__": "ac26ae30-193b-4487-a02b-b12ebbb0bb76"
+    },
+    "bomb": {
+      "__uuid__": "bcc81d07-d102-4b33-ad8f-ff9bc1f7d452"
+    },
+    "sign": {
+      "__uuid__": "e3f08b0f-ab6e-4b28-af39-a25cd4f5b074"
     },
     "plane": false,
     "_id": ""

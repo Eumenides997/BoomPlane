@@ -6,6 +6,7 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import global from "../global";
+import bullet from "../ui/bullet"
 
 const { ccclass, property } = cc._decorator;
 
@@ -36,7 +37,7 @@ export default class NewClass extends cc.Component {
         this.back_btn.node.on(cc.Node.EventType.TOUCH_START, () => cc.director.loadScene("Home"));
     }
 
-    onEditClick(data: string) {
+    onEditClick() {
         joinRoom(this.editBox.getComponent(cc.EditBox).string)
     }
 
@@ -62,8 +63,10 @@ export function joinRoom(roomId: string) {
         if (event.code === MGOBE.ErrCode.EC_OK) {
             cc.director.loadScene("Room")
             console.log(`加入房间成功，房间ID：${event.data.roomInfo.id}`);
+            bullet.setBullet(`加入房间成功，房间ID：${event.data.roomInfo.id}`);
         } else {
             console.log(`加入房间失败，${event.code === MGOBE.ErrCode.EC_ROOM_TEAM_MEMBER_LIMIT_EXCEED ? "当前房间玩家数量已满，" : ""}错误码：${event.code}`);
+            bullet.setBullet(`加入房间失败，${event.code === MGOBE.ErrCode.EC_ROOM_TEAM_MEMBER_LIMIT_EXCEED ? "当前房间玩家数量已满，" : ""}错误码：${event.code}`);
         }
     });
 }

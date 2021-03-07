@@ -31,17 +31,23 @@ export default class NewClass extends cc.Component {
     @property(cc.Button)
     random_btn: cc.Button = null;
 
+    @property(cc.Button)
+    cancel_btn: cc.Button = null;
+
     @property(cc.Label)
     room_id_label: cc.Label = null;
 
     @property(cc.Label)
     player_count_label: cc.Label = null;
 
-    @property(cc.Prefab)
-    ready_pre: cc.Prefab = null;
+    @property(cc.Node)
+    ready: cc.Node = null;
 
     @property(cc.Node)
     map: cc.Node = null;
+
+    @property(cc.Node)
+    exit: cc.Node = null;
 
     // LIFE-CYCLE CALLBACKS:
 
@@ -55,17 +61,24 @@ export default class NewClass extends cc.Component {
 
         // Util.sendToGameSvr("user", MGOBE.Player.id)
 
-        this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, Util.leaveRoom);
+        var exit = this.exit
+
+        exit.x = 9999
+
+        this.leave_btn.node.on(cc.Node.EventType.TOUCH_START, () => exit.x = 0);
+
+        this.ready.x = 9999
 
         this.random_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.onRandom(map));
 
+        this.cancel_btn.node.on(cc.Node.EventType.TOUCH_START, () => this.onCancel(this.ready, this.submmit_btn, this.random_btn, this.cancel_btn));
+
         //提交飞机布局
-        var ready = cc.instantiate(this.ready_pre)
         this.submmit_btn.node.on(cc.Node.EventType.TOUCH_START, () =>
             (
                 // this.node.addChild(ready),
                 // ready.setPosition(cc.v2(0, 0)),
-                this.onSubmmit_btn(this.node, ready)
+                this.onSubmmit_btn(this.node, this.ready, this.submmit_btn, this.random_btn, this.cancel_btn)
             ));
 
         this.setRoomView()
@@ -83,11 +96,20 @@ export default class NewClass extends cc.Component {
         // cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, () => this.sendToGameSvr(StateSyncCmd.up), this);
     }
 
+    onCancel(ready, submmit_btn, random_btn, cancel_btn) {
+        ready.x = 9999
+        submmit_btn.node.x = 0
+        random_btn.node.x = 280
+        cancel_btn.node.x = 9999
+        stateSyncState.flag_plane = true
+        Util.sendToGameSvr("cancel_plane", "cancel_plane")
+    }
+
     onRandom(map) {
         var pos = []
         for (var i = 0; i < 3; i++) {
-            var head_x = parseInt((Math.random() * 19 + 1).toString())//机头x坐标 1->20
-            var head_y = parseInt((Math.random() * 27 + 1).toString())//机头y坐标 1->28
+            var head_x = parseInt((Math.random() * 14 + 1).toString())//机头x坐标 1->20
+            var head_y = parseInt((Math.random() * 19 + 1).toString())//机头y坐标 1->28
             var direction = parseInt((Math.random() * 4).toString())//机头方向
             if (direction === 0) {//机头朝上
                 var tail_x = head_x//机尾x坐标
@@ -140,17 +162,35 @@ export default class NewClass extends cc.Component {
         map.map_init()
     }
 
-    onSubmmit_btn(self, ready) {
+    onSubmmit_btn(self, ready, submmit_btn, random_btn, cancel_btn) {
         // cc.director.loadScene("VS")
         var judge = judge_plane(stateSyncState.playerPlanes)//判断飞机是否重叠
+        var flag = true
         // console.log("是否重叠:", judge)
+        stateSyncState.players.find(p => {
+            if (p.id === MGOBE.Player.id) {
+                if (p.ifPlanes) {
+                    flag = false
+                }
+            }
+        })
         if (!judge) {
-            self.addChild(ready)
-            ready.setPosition(cc.v2(0, 0))
-            Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
+            if (flag) {
+                Util.sendToGameSvr("submmit_plane", stateSyncState.playerPlanes)
+            } else {
+                bullet.setBullet("已经准备过了")
+            }
         } else {
             // console.log("重叠")
             bullet.setBullet("飞机重叠,请更正摆放")
+        }
+        console.log("数据:", stateSyncState)
+        if (stateSyncState.time !== 0) {
+            ready.x = 0
+            submmit_btn.node.x = 9999
+            random_btn.node.x = 9999
+            cancel_btn.node.x = 0
+            stateSyncState.flag_plane = false
         }
     }
 
@@ -194,20 +234,6 @@ export default class NewClass extends cc.Component {
             }
         });
     }
-
-
-    // SDK 解散房间
-    // dismissRoom() {
-    //     console.log(`正在解散房间`);
-
-    //     global.room.dismissRoom({}, event => {
-    //         if (event.code === MGOBE.ErrCode.EC_OK) {
-    //             console.log(`解散房间成功`);
-    //         } else {
-    //             console.log(`解散房间失败，错误码：${event.code}`);
-    //         }
-    //     });
-    // }
 
     /////////////////////////////////// SDK 广播 ///////////////////////////////////
     // SDK 玩家退房广播

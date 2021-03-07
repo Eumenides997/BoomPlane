@@ -40,6 +40,11 @@ export interface WarmBlock {
     y: number
 }
 
+export interface sign {
+    x: number,
+    y: number
+}
+
 //游戏全部信息
 export interface GameState {
     playerPlanes: PlayerPlaneData[],//飞机信息
@@ -49,4 +54,7 @@ export interface GameState {
     state: string,//游戏状态
     warmBlock: WarmBlock[],//飞机重叠部分
     time: number,//回合倒计时
+    bombPos: { x: number, y: number },//炸弹标记坐标
+    signPos: sign[],//辅助标记坐标
+    flag_plane: boolean,//是否可以移动飞机
 }

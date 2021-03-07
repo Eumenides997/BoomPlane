@@ -155,34 +155,34 @@ export function correct_plane() {
                     head_x = 3
                     tail_x = 3
                 }
-                if (head_x > 18) {//超出右边界
-                    head_x = 18
-                    tail_x = 18
+                if (head_x > 13) {//超出右边界
+                    head_x = 13
+                    tail_x = 13
                 }
                 if (tail_y < 1) {//超出下边界
                     head_y = 4
                     tail_y = 1
                 }
-                if (head_y > 28) {//超出上边界
-                    head_y = 28
-                    tail_y = 25
+                if (head_y > 20) {//超出上边界
+                    head_y = 20
+                    tail_y = 17
                 }
             } else {//机头朝下
                 if (head_x < 3) {//超出左边界
                     head_x = 3
                     tail_x = 3
                 }
-                if (head_x > 18) {//超出右边界
-                    head_x = 18
-                    tail_x = 18
+                if (head_x > 13) {//超出右边界
+                    head_x = 13
+                    tail_x = 13
                 }
                 if (head_y < 1) {//超出下边界
                     head_y = 1
                     tail_y = 4
                 }
-                if (tail_y > 28) {//超出上边界
-                    head_y = 25
-                    tail_y = 28
+                if (tail_y > 20) {//超出上边界
+                    head_y = 17
+                    tail_y = 20
                 }
             }
         } else if (plane_head.x < plane_tail.x) {//机头朝左
@@ -190,34 +190,34 @@ export function correct_plane() {
                 head_x = 1
                 tail_x = 4
             }
-            if (tail_x > 20) {//超出右边界
-                head_x = 17
-                tail_x = 20
+            if (tail_x > 15) {//超出右边界
+                head_x = 12
+                tail_x = 15
             }
             if (head_y < 3) {//超出下边界
                 head_y = 3
                 tail_y = 3
             }
-            if (head_y > 26) {//超出上边界
-                head_y = 26
-                tail_y = 26
+            if (head_y > 18) {//超出上边界
+                head_y = 18
+                tail_y = 18
             }
         } else {//机头朝右
             if (tail_x < 1) {//超出左边界
                 head_x = 4
                 tail_x = 1
             }
-            if (head_x > 20) {//超出右边界
-                head_x = 20
-                tail_x = 17
+            if (head_x > 15) {//超出右边界
+                head_x = 15
+                tail_x = 12
             }
             if (head_y < 3) {//超出下边界
                 head_y = 3
                 tail_y = 3
             }
-            if (head_y > 26) {//超出上边界
-                head_y = 26
-                tail_y = 26
+            if (head_y > 18) {//超出上边界
+                head_y = 18
+                tail_y = 18
             }
         }
         playerPlanes2.push({

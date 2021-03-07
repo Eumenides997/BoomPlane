@@ -68,6 +68,30 @@ export function setGameData(id: string, actionData: any, gameData: GameData) {
     //test
     setData(actionData, gameData)
 
+    //当接收客户端信息为取消准备
+    if (actionData.type === "cancel_plane") {
+        var key = []
+        for (var i = 0; i < gameData.planes.length; i++) {
+            var plane = gameData.planes[i]
+            if (plane.userId === id) {
+                key.push(i)
+            }
+        }
+        var dex = 0
+        key.forEach(p => {
+            gameData.planes.splice(p - dex, 1)
+            dex++
+        })
+        gameData.players.forEach(p => {
+            if (p.id === id) {
+                p.ifPlanes = false
+                p.ifBomb = false
+                p.ifWin = false
+                p.ifAgain = false
+            }
+        })
+    }
+
     //当接收客户端信息 类型为->state
     if (actionData.type === "state") {
         gameData.state = actionData.data

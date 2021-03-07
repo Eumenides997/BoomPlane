@@ -114,13 +114,16 @@ export default class NewClass extends cc.Component {
 
     onTouchEnd() {
         //判断地图块上是否有飞机
-        var PlaneData = this.getBlockData()
-        if (PlaneData) {
-            //旋转
-            // console.log("旋转plane: ", PlaneData.id)
-            this.rotatePlane(PlaneData.id)
-            correct_plane()
-            this.map.map_init()
+        var flag = stateSyncState.flag_plane
+        if (flag) {
+            var PlaneData = this.getBlockData()
+            if (PlaneData) {
+                //旋转
+                // console.log("旋转plane: ", PlaneData.id)
+                this.rotatePlane(PlaneData.id)
+                correct_plane()
+                this.map.map_init()
+            }
         }
     }
 
@@ -154,27 +157,30 @@ export default class NewClass extends cc.Component {
     }
 
     onTouchCancel(event) {
-        if (this.plane) {//有飞机
-            // console.log("松开机头机头: (", this.block_x, ",", this.block_y + ")")
-            this.plane = false//判断松开机头
-            var nodePos1 = event.getStartLocation(); //获取触摸结束之前的坐标；
-            // console.log("nodePos1: (", nodePos1.x, ",", nodePos1.y, ")")
-            var nodePos2 = event.getLocation(); //获取触摸结束之后的坐标；
-            // console.log("nodePos2: (", nodePos2.x, ",", nodePos2.y, ")")
-            var width = this.node.width + this.padding
-            //输出移动到的地图坐标
-            var dit_x = (nodePos2.x - nodePos1.x) / width
-            var dit_y = (nodePos2.y - nodePos1.y) / width
-            // dit_x = parseInt(dit_x.toString())
-            // dit_y = parseInt(dit_y.toString())
-            dit_x = Math.round(dit_x)
-            dit_y = Math.round(dit_y)
-            // console.log("(block_x,block_x): (", dit_x, ",", dit_y, ")")
-            //移动飞机
-            var PlaneData = this.getBlockData()
-            this.movePlane(dit_x, dit_y, PlaneData.id)
-            correct_plane()
-            this.map.map_init()
+        var flag = stateSyncState.flag_plane
+        if (flag) {
+            if (this.plane) {//有飞机
+                // console.log("松开机头机头: (", this.block_x, ",", this.block_y + ")")
+                this.plane = false//判断松开机头
+                var nodePos1 = event.getStartLocation(); //获取触摸结束之前的坐标；
+                // console.log("nodePos1: (", nodePos1.x, ",", nodePos1.y, ")")
+                var nodePos2 = event.getLocation(); //获取触摸结束之后的坐标；
+                // console.log("nodePos2: (", nodePos2.x, ",", nodePos2.y, ")")
+                var width = this.node.width + this.padding
+                //输出移动到的地图坐标
+                var dit_x = (nodePos2.x - nodePos1.x) / width
+                var dit_y = (nodePos2.y - nodePos1.y) / width
+                // dit_x = parseInt(dit_x.toString())
+                // dit_y = parseInt(dit_y.toString())
+                dit_x = Math.round(dit_x)
+                dit_y = Math.round(dit_y)
+                // console.log("(block_x,block_x): (", dit_x, ",", dit_y, ")")
+                //移动飞机
+                var PlaneData = this.getBlockData()
+                this.movePlane(dit_x, dit_y, PlaneData.id)
+                correct_plane()
+                this.map.map_init()
+            }
         }
     }
 

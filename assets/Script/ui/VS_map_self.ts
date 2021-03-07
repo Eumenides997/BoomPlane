@@ -7,6 +7,7 @@
 
 import { stateSyncState } from "../logic/StateSyncLogic";
 import { getPlanePos } from "../util"
+import bullet from "../ui/bullet"
 
 const { ccclass, property } = cc._decorator;
 
@@ -36,8 +37,8 @@ export default class NewClass extends cc.Component {
         var block = cc.instantiate(this.VS_block)
         let size = block.width
         let padding = block.getComponent("VS_map_self_block").padding
-        for (var i = 0; i < 20; i++) {
-            for (var j = 0; j < 28; j++) {
+        for (var i = 0; i < 15; i++) {
+            for (var j = 0; j < 20; j++) {
                 //放置一个地图块
                 var block = cc.instantiate(this.VS_block)
                 this.node.addChild(block)
@@ -139,7 +140,18 @@ export default class NewClass extends cc.Component {
         }
     }
 
+    private static isUpdate: boolean = false
+
+    public static setUpdate() {
+        this.isUpdate = true
+    }
+
     update(dt) {
-        this.map_init()
+        if (NewClass.isUpdate) {//有新的弹坑时重新加载地图
+            // console.log("加载地图...")
+            bullet.setBullet("投放炸弹中...")
+            this.map_init()
+            NewClass.isUpdate = false//加载完成后停止重复加载
+        }
     }
 }
