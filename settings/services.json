@@ -44,6 +44,18 @@
 				{
 					"service_id": "269",
 					"enable": true
+				},
+				{
+					"service_id": "272",
+					"enable": false,
+					"params": {
+						"env_id": "test-space-9gcwtoxd94d9121c",
+						"plugin_version": "0.7.0_1.3.3"
+					}
+				},
+				{
+					"service_id": "309",
+					"enable": false
 				}
 			]
 		}
