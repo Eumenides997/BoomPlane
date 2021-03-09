@@ -7,6 +7,7 @@
 
 import * as Util from "../util";
 import global from "../global";
+// import globalData from "../globalData";
 import configs from "../config"
 
 const { ccclass, property } = cc._decorator;
@@ -26,6 +27,12 @@ export default class Home extends cc.Component {
     @property(cc.Prefab)
     loadding: cc.Prefab = null;
 
+    @property(cc.Sprite)
+    Sprite: cc.Sprite = null;
+
+    @property(cc.Label)
+    Label: cc.Label = null;
+
     // 首页游戏ID
     public static gameId: string = "";
     // 首页游戏Key
@@ -35,17 +42,33 @@ export default class Home extends cc.Component {
     /// CA 根证书（Cocos Native 环境下 wss 需要此参数）
     private static cacertNativeUrl = "";
 
-    private timer = undefined;
-
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
+    onLoad() {
+        console.log("1")
+        this.Label.string = global.userInfo.userinfo.nickName
+        var self = this
+        let _url = global.userInfo.userinfo.avatarUrl
+        cc.loader.load({
+            url: _url,
+            type: 'png'
+        }, function (err, texture) {
+            console.log("2")
+            var frame = new cc.SpriteFrame(texture)
+            if (err) {
+                console.log("登录背景图片", err)
+            }
+            console.log("3")
+            self.Sprite.getComponent(cc.Sprite).spriteFrame = frame
+        })
+    }
 
     start() {
+        console.log("this is home")
+        console.log("G:", global)
         this.createRoomButton.node.on(cc.Node.EventType.TOUCH_START, () => this.createRoom());
         this.joinRoomButton.node.on(cc.Node.EventType.TOUCH_START, () => cc.director.loadScene("JoinRoom"));
         this.matchPlaerButton.node.on(cc.Node.EventType.TOUCH_START, () => cc.director.loadScene("MatchRoom"));
-        // console.log("this is home")
         this.initSDK()
     }
 

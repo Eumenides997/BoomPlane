@@ -1,3 +1,0 @@
-window.G = {
-    userInfo: null
-}

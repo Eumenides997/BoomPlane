@@ -81,7 +81,7 @@ wx.login({
             console.log(res)
             if (res.errMsg === "getUserInfo:ok") {
                 console.log("已经授权")
-                // WeChat.onRegisterUser(res.userInfo)
+                WeChat.onRegisterUser(res.userInfo)
                 console.log(res)
                 button.destroy()
             } else {

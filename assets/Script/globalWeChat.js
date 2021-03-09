@@ -1,3 +1,4 @@
+import global from "./global"
 window.WeChat = {
 
 }
@@ -14,7 +15,8 @@ WeChat.onRegisterUser = function (_userinfo) {
         },
         success(res) {
             console.log("登录回调成功", res)
-            G.userinfo = res.result.data[0].userinfo
+            global.userInfo = res.result.data.userinfo
+            // console.log("G:", global.userInfo)
             cc.director.loadScene("Home")
         },
         fail: console.error()

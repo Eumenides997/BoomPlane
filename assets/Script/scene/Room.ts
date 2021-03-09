@@ -54,6 +54,8 @@ export default class NewClass extends cc.Component {
     // onLoad () {}
 
     start() {
+        
+        stateSyncState.flag_plane = true
 
         var map = this.map.getComponent("map")
 
