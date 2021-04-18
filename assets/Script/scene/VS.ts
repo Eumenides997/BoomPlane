@@ -119,7 +119,7 @@ export default class NewClass extends cc.Component {
         this.time.string = stateSyncState.time.toString().slice(0, 0 + 3)
         if (stateSyncState.state === "游戏结束") {
             this.btn_again.node.x = 0
-            this.btn_again.node.y = -230
+            this.btn_again.node.y = -400
             stateSyncState.players.find(p => {
                 if (p.id === MGOBE.Player.id) {
                     if (p.ifWin) {

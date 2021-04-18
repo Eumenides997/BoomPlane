@@ -36,17 +36,18 @@ cc.Class({
     onLoad() {
         console.log("1")
         var self = this
-        let _url = "https://776f-workspace-2gaf9cuc022547d5-1305014436.tcb.qcloud.la/Texture/login_bg.png?sign=785508f6eb2a6f08de03e5edc269f844&t=1615123853"
+        let _url = "https://776f-workspace-2gaf9cuc022547d5-1305014436.tcb.qcloud.la/Texture/src%3Dhttp___img.pconline.com.cn_images_upload_upc_tx_wallpaper_1407_30_c1_36874065_1406711490463_320x480.jpg%26refer%3Dhttp___img.pconline.com.jpg?sign=7c3d1e54fb769b412551e9bb7ad388c5&t=1618123012"
         cc.loader.load({
             url: _url,
             type: 'png'
         }, function (err, texture) {
-            console.log("2")
+            // console.log("2")
             var frame = new cc.SpriteFrame(texture)
+            global
             if (err) {
                 console.log("登录背景图片", err)
             }
-            console.log("3")
+            // console.log("3")
             self.BGSprite.getComponent(cc.Sprite).spriteFrame = frame
         })
     },
